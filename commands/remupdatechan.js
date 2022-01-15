@@ -18,9 +18,9 @@ module.exports = {
             } else {
                 let prev = JSON.parse(data);
                 if (!prev.update_channels.includes(channel.id)) {
-                    return interaction.reply({ content : `${channel.name} is not an update channel.`, ephemeral : true });
+                    return interaction.reply({ content : `<#${channel.id}> is not an update channel.`, ephemeral : true });
                 } else {
-                    interaction.reply({ content : `${interaction.options.getChannel("channel")} is removed as an update channel!`, ephemeral : true });
+                    interaction.reply({ content : `<#${channel.id}> is removed as an update channel!`, ephemeral : true });
                     client.update_channels.pop(channel.id);
                     prev.update_channels.pop(channel.id);
                 }

@@ -8,6 +8,7 @@ module.exports = {
     .addChannelOption(option => 
         option.setName("channel")
         .setDescription("Channel to add to the list")
+        .addChannelType(0)
         .setRequired(true)),
     async execute(interaction) {
         let client = interaction.client;
@@ -18,9 +19,9 @@ module.exports = {
             } else {
                 let prev = JSON.parse(data);
                 if (prev.update_channels.includes(channel.id)) {
-                    return interaction.reply({ content : `${channel.name} is already an update channel.`, ephemeral : true });
+                    return interaction.reply({ content : `<#${channel.id}> is already an update channel.`, ephemeral : true });
                 } else {
-                    interaction.reply({ content : `${interaction.options.getChannel("channel")} is now an update channel!`, ephemeral : true });
+                    interaction.reply({ content : `<#${channel.id}> is now an update channel!`, ephemeral : true });
                     client.update_channels.push(channel.id);
                     prev.update_channels.push(channel.id);
                 }
