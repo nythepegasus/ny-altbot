@@ -14,7 +14,6 @@ module.exports = {
         client.dbInstance = mongoClient.db(mongodbName);
         client.tracked_apps = client.dbInstance.collection(mongoCollection);
         let updatedApps = await version_utils.updateVersions(client.tracked_apps, sources);
-        console.log(updatedApps);
         if (updatedApps.length != 0) {
             for (app of updatedApps) {
                 let curApp = app[0];
@@ -33,7 +32,6 @@ module.exports = {
         }
         setInterval(async () => {
             updatedApps = await version_utils.updateVersions(client.tracked_apps, sources);
-            console.log(updatedApps);
             if (updatedApps.length != 0) {
                 for (app of updatedApps) {
                     let curApp = app[0];
