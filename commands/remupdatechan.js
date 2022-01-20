@@ -2,9 +2,11 @@ const fs = require("fs");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
+    needsMod: true,
     data: new SlashCommandBuilder()
     .setName("removeupdatechannel")
     .setDescription("Remove an update channel to be notified on source updates")
+    .setDefaultPermission(false)
     .addChannelOption(option => 
         option.setName("channel")
         .setDescription("Channel to add to the list")

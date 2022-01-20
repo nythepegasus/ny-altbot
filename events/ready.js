@@ -1,13 +1,33 @@
 const Discord = require('discord.js');
 const { MongoClient } = require("mongodb");
-const version_utils = require("../utils/version_utils.js")
-const { mongoURL, mongodbName, mongoCollection, sources, update_channels } = require("../config.json");
+const version_utils = require("../utils/version_utils.js");
+const { guildId, mongoURL, mongodbName, mongoCollection, sources, update_channels } = require("../config.json");
+const commandIds = require("../commands.json");
 
 module.exports = {
     name: 'ready',
     once: true,
     async execute(client) {
         console.log(`Ready! Logged in as ${client.user.tag}`);
+        const guild = await client.guilds.cache.get(guildId);
+
+        client.modRole = await guild.roles.cache.find(r => r.name == "Mods");
+        client.helperRole = await guild.roles.cache.find(r => r.name == "Helpers");
+        client.unverifiedRole = await guild.roles.cache.find(r => r.name == "Unverified");
+        
+        for (com of commandIds) {
+            const command = await guild?.commands.fetch(com.id);
+            const c = client.commands.get(com.name);
+            let permissions = [];
+            if (c?.unverified) permissions.push({id: client.unverifiedRole.id, type: "ROLE", permission: true});
+            if (c?.needsHelper) permissions.push({id: client.helperRole.id, type: "ROLE", permission: true});
+            if (c?.needsMod || c?.needsHelper) permissions.push({id: guild.ownerId, type: "USER", permission: true}, 
+                                                                {id: client.modRole.id, type: "ROLE", permission: true});
+            if (!c?.unverified) permissions.push({id: client.unverifiedRole.id, type: "ROLE", permission: false});
+            console.log(permissions);
+            await command.permissions.set({ permissions });
+        }
+
         client.update_channels = update_channels;
         const mongoClient = new MongoClient(mongoURL);
         await mongoClient.connect();
