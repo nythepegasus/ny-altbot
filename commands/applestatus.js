@@ -12,7 +12,7 @@ module.exports = {
             interaction.editReply({ files: ["apstatus.jpeg"] });
             setTimeout(() => {
                 try {
-                    fs.unlinkSync("status.jpeg");
+                    fs.unlinkSync("apstatus.jpeg");
                 } catch (error) {
                     console.log(error);
                 }
