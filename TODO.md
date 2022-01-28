@@ -1,10 +1,10 @@
 # Commands
-* Permissions
-  * Any permissions: `needs<Role>` permission based system in the command file
-  * Assume permissons allowed are Role< (ex. Admin/Owner/higher can run `needsMod` commands)
+* ~~Permissions~~
+  * ~~Any permissions: `needs<Role>` permission based system in the command file~~
+  * ~~Assume permissons allowed are Role< (ex. Admin/Owner/higher can run `needsMod` commands)~~
 * Timeout
-  * Command timeouts to reduce/prevent spam, reply with an ephemeral message warning the user on spam
-    * `Discord.Collection` or something similar to keep track of timeouts, or if necessary,
+  * ~~Command timeouts to reduce/prevent spam, reply with an ephemeral message warning the user on spam~~
+    * ~~`Discord.Collection` or something similar to keep track of timeouts, or if necessary,~~
     * MongoDB storage for longer term commands, daily/weekly commands
 * Porting
   * Getting the rest of the old commands ported over

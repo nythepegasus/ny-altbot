@@ -24,7 +24,6 @@ module.exports = {
             if (c?.needsMod || c?.needsHelper) permissions.push({id: guild.ownerId, type: "USER", permission: true}, 
                                                                 {id: client.modRole.id, type: "ROLE", permission: true});
             if (!c?.unverified) permissions.push({id: client.unverifiedRole.id, type: "ROLE", permission: false});
-            console.log(permissions);
             await command.permissions.set({ permissions });
         }
 

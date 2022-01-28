@@ -4,12 +4,16 @@ const { token } = require('./config.json');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES] });
 
+client.cooldowns = new Collection();
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.data.name, command);
+    if (command?.cooldown) {
+        client.cooldowns.set(command.data.name, new Collection());
+    }
 }
 
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
