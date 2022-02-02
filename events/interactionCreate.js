@@ -25,6 +25,8 @@ module.exports = {
                     ret_str += seconds != 0 ? `${seconds} second(s)` : "";
                     await interaction.reply({ content: ret_str, ephemeral: true });
                 }
+            } else {
+                await command.execute(interaction);
             }
         } catch (error) {
             console.error(error);
