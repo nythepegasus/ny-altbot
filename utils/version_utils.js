@@ -5,8 +5,8 @@ const fetch = require("node-fetch");
 module.exports = {
     compareVersions : function (current_version, newer_version) {
         // Compare current_version and newer_version, true if current_version is lower and false if newer_version is lower
-        let semcurrent_version = semverCoerce(current_version);
-        let semnewer_version = semverCoerce(newer_version);
+        const semcurrent_version = semverCoerce(current_version);
+        const semnewer_version = semverCoerce(newer_version);
         if (semcurrent_version == semnewer_version) {
             if (current_version.includes("a") && newer_version.includes("b")) {
                 return true
@@ -27,14 +27,14 @@ module.exports = {
         let updatedApps = [];
         for (url of sources) {
             
-            let res = await this.getVersions(url);
+            const res = await this.getVersions(url);
 
             for (app of res.apps) {
-                let bundleIdentifier = app.bundleIdentifier;
-                let newVersion = app.version;
-                let curVersion = await collection.findOne({app: bundleIdentifier});
+                const bundleIdentifier = app.bundleIdentifier;
+                const newVersion = app.version;
+                const curVersion = await collection.findOne({app: bundleIdentifier});
                 if (!this.compareVersions(curVersion?.version ?? "0.0.0", newVersion)) continue;
-                let insertResult = await collection.findOneAndUpdate({app: bundleIdentifier}, {$set: {version: newVersion}}, {upsert: true});
+                const insertResult = await collection.findOneAndUpdate({app: bundleIdentifier}, {$set: {version: newVersion}}, {upsert: true});
                 if (newVersion != insertResult.value?.version) {
                     updatedApps.push([app, curVersion]);
                 }
