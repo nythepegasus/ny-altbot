@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const { MongoClient } = require("mongodb");
+const all_roles = require("../utils/all-roles");
 const version_utils = require("../utils/version_utils.js");
 const { guildId, mongoURL, mongodbName, mongoCollection, sources, update_channels } = require("../config.json");
 const commandIds = require("../commands.json");
@@ -36,6 +37,19 @@ module.exports = {
         }
 
         console.log("All command permissions have been updated.");
+
+        client.guilds.cache.map(guild => {
+            const ruleChannel = guild.channels.cache.find(channel => channel.name === "choose-your-roles");
+            if (ruleChannel == undefined) guild.channels.create("choose-your-roles");
+            const guildRoles = guild.roles.cache.toJSON().map(role => role.name);
+            for (const role of all_roles.all_roles) {
+                console.log(guildRoles.indexOf(role.name));
+                if (guildRoles.indexOf(role.name) == -1) guild.roles.create({name: role.name, color: role.color})
+                    .catch(console.error);
+            }
+        });
+
+        console.log("Ensured all necessary roles are made.")
 
         client.update_channels = update_channels;
         const mongoClient = new MongoClient(mongoURL);
