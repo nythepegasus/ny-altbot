@@ -1,0 +1,19 @@
+{
+    "TOKEN": "000000000000000000000000.000000.000000000000000000000000000",
+    "cat_token": "00000000-0000-0000-0000-000000000000",
+    "owner_id": 123456789098765432,
+    "prefix": "buh!",
+    "modules": [
+        "modules.tags",
+        "modules.utils",
+        "modules.sources",
+        "modules.reactionroles"
+    ],
+    "statuses": [],
+    "postgres": {
+        "user": "user",
+        "password": "supersecure",
+        "database": "altbot",
+        "host": "127.0.0.1"
+    }
+}

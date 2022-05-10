@@ -81,4 +81,4 @@ class MyClient(commands.Bot):
         super().run(self.__TOKEN)
 
 
-MyClient(json.load(open("confs/conf.json"))).run()
+MyClient(json.load(open("conf.json"))).run()

@@ -1,6 +1,6 @@
 .DS_Store
-confs/
 *.pyc
+conf.json
 **/__pycache__/
 .idea/
 test/
