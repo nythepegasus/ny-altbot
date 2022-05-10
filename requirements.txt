@@ -1,10 +1,23 @@
 aiohttp==3.8.1
 aiosignal==1.2.0
+appdirs==1.4.4
 async-timeout==4.0.2
+asyncpg==0.25.0
 attrs==21.4.0
+certifi==2021.10.8
 charset-normalizer==2.0.12
-discord.py @ git+https://github.com/Rapptz/discord.py@7851084b63bb4039a8396c14353ac1f4012a9772
+discord.py @ git+https://github.com/Rapptz/discord.py@eee65ac39b85edc0353402baa42ca7e72ec286d9
 frozenlist==1.3.0
 idna==3.3
+importlib-metadata==4.11.3
 multidict==6.0.2
+packaging==21.3
+Pillow==9.1.0
+pyee==8.2.2
+pyparsing==3.0.8
+pyppeteer==1.0.2
+tqdm==4.64.0
+urllib3==1.26.9
+websockets==10.3
 yarl==1.7.2
+zipp==3.8.0
