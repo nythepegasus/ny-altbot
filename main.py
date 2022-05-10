@@ -1,13 +1,12 @@
 import sys
 import json
 import aiohttp
-import asyncio
+import asyncpg
 import discord
 import traceback
-import mongoengine
+from datetime import datetime
 from discord import Embed
 from packaging import version
-from utils.schema import Application
 from discord.ext import commands, tasks
 
 
@@ -16,53 +15,57 @@ class MyClient(commands.Bot):
         super().__init__(*args, command_prefix=conf_data["prefix"], intents=discord.Intents().all(),
                          application_id=706563324560801793, **kwargs)
         self.session = None
-        self.owner_id = conf_data["owner_id"]
-        self.mgocnf = conf_data["mongodb"]
-        self.modules = conf_data["modules"]
-        self.sources = conf_data["sources"]
-        self.reroles = conf_data["reaction_roles"]
-        self.__TOKEN = conf_data["TOKEN"]
-        mongoengine.connect(host=f"mongodb://{self.mgocnf['ipport']}/{self.mgocnf['db']}")
-        print("Connected to MongoDB!")
+        self.db = None
+        self.__TOKEN = conf_data.pop("TOKEN")
+        self.conf_data = conf_data
+        self.owner_id = self.conf_data["owner_id"]
+        self.update_channels = None
         self.remove_command("help")
 
     async def on_ready(self) -> None:
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
 
-    @tasks.loop(minutes=1)
+    @tasks.loop(minutes=5)
     async def update_apps(self) -> None:
         await self.wait_until_ready()
-        for url in self.sources:
+        sources = [s['url'] for s in await self.db.fetch("SELECT url FROM sources")]
+        for url in sources:
             async with self.session.get(url) as response:
-                html = await response.text()
-                for app in json.loads(html)["apps"]:
-                    old_app = Application.objects(bundle_id=app["bundleIdentifier"]).first()
+                data = json.loads(await response.text())
+                for app in data["apps"]:
+                    old_app = await self.db.fetchrow(f"SELECT * FROM apps WHERE id = '{app['bundleIdentifier']}'")
                     if old_app is None:
-                        Application(bundle_id=app["bundleIdentifier"],
-                                    name=app["name"],
-                                    version=app["version"]).save()
+                        await self.db.execute(f"INSERT INTO apps VALUES('{app['bundleIdentifier']}', '{app['name']}', "
+                                              f"'{app['version']}', '{data['identifier']}')")
                         continue
                     else:
-                        print(app["bundleIdentifier"])
-                        print(f"{app['version']} > {old_app.version}")
-                        print(version.parse(app["version"]) > version.parse(old_app.version))
-                        if version.parse(app["version"]) > version.parse(old_app.version):
-                            old_app.update(set__version=app["version"])
-                            if "a" in app["version"]:
-                                # Alpha update!
-                                pass
-                            elif "b" in app["version"]:
-                                # Beta update!
-                                pass
-                            else:
-                                # Normal update!
-                                pass
-                            # send to update channels if app is newer
+                        if version.parse(app["version"]) > version.parse(old_app['version']):
+                            await self.db.execute(f"UPDATE apps SET version='{app['version']}', name='{app['name']}'"
+                                                  f"WHERE id = '{app['bundleIdentifier']}'")
+                            emb = Embed(title=f"New {app['name']} update!", color=int(app['tintColor'], 16),
+                                        timestamp=datetime.now())
+                            emb.add_field(name="Version:", value=f"{old_app['version']} -> {app['version']}", inline=False)
+                            emb.add_field(name="Changelog:", value=app['versionDescription'], inline=False)
+                            emb.set_thumbnail(url=app['iconURL'])
+                            emb.set_footer(text=f"AltBot v. 1.0")
+                            for channel in self.update_channels:
+                                ping_roles = await self.db.fetch(f"SELECT role_id FROM ping_roles "
+                                                                 f"WHERE guild_id = {channel.guild.id} AND "
+                                                                 f"appbundle_id = '{app['bundleIdentifier']}'")
+                                guild = self.get_guild(channel.guild.id)
+                                ret_msg = " ".join([guild.get_role(r["role_id"]).mention for r in ping_roles])
+                                await channel.send(content=ret_msg, embed=emb)
 
     async def setup_hook(self) -> None:
-        # self.update_apps.start()
-        for ext in self.modules:
+        self.db = await asyncpg.connect(**self.conf_data["postgres"])
+        print("Connected to postgres!")
+
+        update_channels = await self.db.fetch("SELECT * FROM update_channels")
+        self.update_channels = [await self.fetch_channel(channel["channel_id"]) for channel in update_channels]
+
+        self.update_apps.start()
+        for ext in self.conf_data["modules"]:
             try:
                 await self.load_extension(ext)
                 print(ext)
@@ -70,12 +73,11 @@ class MyClient(commands.Bot):
                 print(f'Failed to load extension {ext}.', file=sys.stderr)
                 print(f"{type(e).__name__} - {e}")
                 traceback.print_exc()
-        await self.tree.sync(guild=discord.Object(537887803774730270))
         self.session = aiohttp.ClientSession()
 
     async def close(self):
-        await super().close()
         await self.session.close()
+        await super().close()
 
     def run(self):
         super().run(self.__TOKEN)

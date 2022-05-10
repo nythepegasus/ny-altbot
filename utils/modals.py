@@ -1,6 +1,5 @@
 import discord
 import traceback
-from .schema import Tag
 
 
 class TagModal(discord.ui.Modal, title="New Tag"):
@@ -18,13 +17,19 @@ class TagModal(discord.ui.Modal, title="New Tag"):
     )
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
-        db_tag = Tag.objects(name=self.tag_name.value).first()
+        name = self.tag_name.value
+        tag = self.tag_content.value
+        section = self.tag_section.value
+        db_tag = await interaction.client.db.fetch(f"SELECT * FROM tags WHERE name = '{name}'")
+        db_tag = db_tag[0]
         if db_tag is not None:
             ret_str = F"Edited tag {self.tag_name.value}"
         else:
             ret_str = f"New tag created '{self.tag_name.value}'"
+        await interaction.client.db.execute(f"INSERT INTO tags "
+                                            f"VALUES('{name}', '{tag}', '{section}') ON CONFLICT (name) "
+                                            f"DO UPDATE SET tag = '{tag}', section = '{section}'")
         await interaction.response.send_message(ret_str, ephemeral=True)
-        db_tag.update(set__tag=self.tag_content.value, set__section=self.tag_section.value)
 
     async def on_error(self, error: Exception, interaction: discord.Interaction) -> None:
         await interaction.response.send_message(f"Oops something went wrong!", ephemeral=True)
