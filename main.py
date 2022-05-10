@@ -13,7 +13,7 @@ from discord.ext import commands, tasks
 class MyClient(commands.Bot):
     def __init__(self, conf_data: dict, *args, **kwargs):
         super().__init__(*args, command_prefix=conf_data["prefix"], intents=discord.Intents().all(),
-                         application_id=706563324560801793, **kwargs)
+                         application_id=conf_data["application_id"], **kwargs)
         self.session = None
         self.db = None
         self.__TOKEN = conf_data.pop("TOKEN")
