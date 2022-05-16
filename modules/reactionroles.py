@@ -47,7 +47,7 @@ class ReactionCog(Cog, name="Reaction Roles"):
     @app_commands.describe(emoji="The emoji to add as the reaction role to the message.")
     @app_commands.describe(role="The role to relate to the emoji")
     @app_commands.describe(exclusive="Which group the role should be exclusive to. (Optional)")
-    @app_commands.checks.has_role("Moderators")
+    @app_commands.checks.has_role("Mods")
     async def add_rerole(self, interaction: discord.Interaction, message_id: str,
                          channel: app_commands.AppCommandChannel, emoji: str, role: discord.Role,
                          exclusive: str = ""):
@@ -68,7 +68,7 @@ class ReactionCog(Cog, name="Reaction Roles"):
 
     @app_commands.command(name="remove-rerole", description="Delete reaction role. (NOT RECOMMENDED)")
     @app_commands.describe(role="The role to remove as a reaction role.")
-    @app_commands.checks.has_role("Moderators")
+    @app_commands.checks.has_role("Mods")
     async def remove_rerole(self, interaction: discord.Interaction, role: str):
         t_role = await self.client.db.fetchrow(f"SELECT * FROM react_roles WHERE guild_id = {interaction.guild_id} "
                                                f"AND role_id = {role}")

@@ -12,7 +12,7 @@ class TagCog(commands.Cog, name="Tags"):
     @app_commands.command(name="tag", description="Send a tag")
     @app_commands.describe(tag_name="Name of the tag.")
     @app_commands.describe(user="The user to recommend this tag to.")
-    @app_commands.checks.has_any_role("Moderators", "Helpers", "Testers")
+    @app_commands.checks.has_any_role("Mods", "Helpers", "Testers")
     async def tag(self, interaction: discord.Interaction, tag_name: str, user: discord.User = None):
         tag = await self.client.db.fetchrow(f"SELECT * FROM tags WHERE name = '{tag_name}'")
         if tag is None:
@@ -22,13 +22,13 @@ class TagCog(commands.Cog, name="Tags"):
         await interaction.response.send_message(ret_str)
 
     @app_commands.command(name="add-tag", description="Add a new tag")
-    @app_commands.checks.has_any_role("Moderators", "Helpers", "Testers")
+    @app_commands.checks.has_any_role("Mods", "Helpers", "Testers")
     async def add_tag(self, interaction: discord.Interaction) -> None:
         await interaction.response.send_modal(TagModal())
 
     @app_commands.command(name="edit-tag", description="Edit an existing tag")
     @app_commands.describe(tag_name="Name of the tag.")
-    @app_commands.checks.has_any_role("Moderators", "Helpers", "Testers")
+    @app_commands.checks.has_any_role("Mods", "Helpers", "Testers")
     async def edit_tag(self, interaction: discord.Interaction, tag_name: str):
         tag = await self.client.db.fetchrow(f"SELECT * FROM tags WHERE name LIKE '{tag_name}%'")
         if tag is None:
@@ -42,7 +42,7 @@ class TagCog(commands.Cog, name="Tags"):
 
     @app_commands.command(name="remove-tag", description="Remove a tag")
     @app_commands.describe(tag_name="Name of the tag.")
-    @app_commands.checks.has_any_role("Moderators")
+    @app_commands.checks.has_any_role("Mods")
     async def rem_tag(self, interaction: discord.Interaction, tag_name: str):
         tags = await self.client.db.fetchrow(f"SELECT * FROM tags WHERE name = '{tag_name}'")
         if len(tags) == 0:

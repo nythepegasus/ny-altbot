@@ -20,7 +20,7 @@ class TesterCog(Cog):
         raise TypeError("Woops")
 
     @app_commands.command(name="tester", description="Testing error handler")
-    @app_commands.checks.has_role("Moderators")
+    @app_commands.checks.has_role("Mods")
     @app_commands.guilds(discord.Object(id=537887803774730270))
     async def tester(self, interaction: discord.Interaction):
         await interaction.response.send_message("Testing errors..")

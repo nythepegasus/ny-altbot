@@ -12,7 +12,7 @@ class SourcesCog(Cog, name="Sources"):
     @app_commands.command(name="add-source", description="Add a link to an AltStore source.")
     @app_commands.describe(source_name="Name of the AltSource.")
     @app_commands.describe(source_url="URL of the AltSource.")
-    @app_commands.checks.has_any_role("Moderators", "Helpers")
+    @app_commands.checks.has_any_role("Mods", "Helpers")
     async def add_source(self, interaction: discord.Interaction, source_name: str, source_url: str) -> None:
         await interaction.response.send_message(
             f"[{source_name}](https://delta-skins.github.io/sourceinstall.html?altstore://url?={source_url})"
@@ -20,7 +20,7 @@ class SourcesCog(Cog, name="Sources"):
 
     @app_commands.command(name="track-source", description="Add an AltSource to track with AltBot")
     @app_commands.describe(source_url="URL of AltSource to track.")
-    @app_commands.checks.has_role("Moderators")
+    @app_commands.checks.has_role("Mods")
     async def track_source(self, interaction: discord.Interaction, source_url: str):
         try:
             async with self.client.session.get(source_url) as response:
@@ -39,7 +39,7 @@ class SourcesCog(Cog, name="Sources"):
 
     @app_commands.command(name="add-update-channel", description="Add an update channel to track AltSource apps.")
     @app_commands.describe(channel="The channel to receive app update notifications.")
-    @app_commands.checks.has_role("Moderators")
+    @app_commands.checks.has_role("Mods")
     async def add_update_channel(self, interaction: discord.Interaction, channel: app_commands.AppCommandChannel):
         self.client.update_channels.append(self.client.get_channel(channel.id))
         await self.client.db.execute(f"INSERT INTO update_channels VALUES({channel.id})")
@@ -47,7 +47,7 @@ class SourcesCog(Cog, name="Sources"):
 
     @app_commands.command(name="remove-update-channel", description="Delete an update channel.")
     @app_commands.describe(channel="The channel to remove from app update notifications.")
-    @app_commands.checks.has_role("Moderators")
+    @app_commands.checks.has_role("Mods")
     async def rem_update_channel(self, interaction: discord.Interaction, channel: str):
         channel = await self.client.fetch_channel(int(channel))
         self.client.update_channels.remove(channel)
@@ -61,7 +61,7 @@ class SourcesCog(Cog, name="Sources"):
         return [app_commands.Choice(name=c.name, value=str(c.id)) for c in channels]
 
     @app_commands.command(name="add-ping-role", description="Add a role to be pinged on updates.")
-    @app_commands.checks.has_role("Moderators")
+    @app_commands.checks.has_role("Mods")
     async def add_ping_role(self, interaction: discord.Interaction, role: discord.Role, app_id: str):
         await self.client.db.execute(f"INSERT INTO ping_roles VALUES({interaction.guild_id}, {role.id}, '{app_id}')")
         await interaction.response.send_message(f"Added role {role.name} to be pinged for {app_id}.", ephemeral=True)

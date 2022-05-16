@@ -21,8 +21,7 @@ class TagModal(discord.ui.Modal, title="New Tag"):
         tag = self.tag_content.value
         section = self.tag_section.value
         db_tag = await interaction.client.db.fetch(f"SELECT * FROM tags WHERE name = '{name}'")
-        db_tag = db_tag[0]
-        if db_tag is not None:
+        if len(db_tag) is not 0:
             ret_str = F"Edited tag {self.tag_name.value}"
         else:
             ret_str = f"New tag created '{self.tag_name.value}'"
