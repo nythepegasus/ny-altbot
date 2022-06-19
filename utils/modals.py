@@ -18,10 +18,10 @@ class TagModal(discord.ui.Modal, title="New Tag"):
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
         name = self.tag_name.value
-        tag = self.tag_content.value
+        tag = self.tag_content.value.replace("'", "''")
         section = self.tag_section.value
         db_tag = await interaction.client.db.fetch(f"SELECT * FROM tags WHERE name = '{name}'")
-        if len(db_tag) is not 0:
+        if len(db_tag) != 0:
             ret_str = F"Edited tag {self.tag_name.value}"
         else:
             ret_str = f"New tag created '{self.tag_name.value}'"
@@ -31,5 +31,5 @@ class TagModal(discord.ui.Modal, title="New Tag"):
         await interaction.response.send_message(ret_str, ephemeral=True)
 
     async def on_error(self, error: Exception, interaction: discord.Interaction) -> None:
-        await interaction.response.send_message(f"Oops something went wrong!", ephemeral=True)
+        await interaction.response.send_message(f"Oops something went wrong!\n{error.__traceback__}", ephemeral=True)
         traceback.print_tb(error.__traceback__)
