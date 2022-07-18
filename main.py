@@ -5,8 +5,10 @@ import asyncpg
 import discord
 import traceback
 from datetime import datetime
-from discord import Embed
 from packaging import version
+from discord import Embed, Interaction
+from discord.app_commands import AppCommandError, MissingPermissions
+from discord.app_commands.errors import MissingRole, MissingAnyRole
 from discord.ext import commands, tasks
 
 
@@ -83,4 +85,24 @@ class MyClient(commands.Bot):
         super().run(self.__TOKEN)
 
 
-MyClient(json.load(open("conf.json"))).run()
+client = MyClient(json.load(open("conf.json")))
+
+@client.command()
+async def sync(ctx):
+    c = await client.tree.sync()
+    print(c)
+    await ctx.send(f"Synced {len(c)} global commands.")
+
+@client.command()
+async def sync_dev(ctx):
+    c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
+    await interaction.response.send_message(f"Synced {len(c)} dev commands.")
+
+@client.tree.error
+async def on_app_command_error(interaction: Interaction, error: AppCommandError):
+    if isinstance(error, (MissingRole, MissingAnyRole)):
+        await interaction.response.send_message(error, ephemeral=True)
+        return
+
+client.run()
+

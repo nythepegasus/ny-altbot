@@ -39,18 +39,5 @@ class UtilCog(Cog, name="Utility"):
         await interaction.followup.send(file=discord.File("screenshot.png"))
         os.remove("screenshot.png")
 
-    @app_commands.command(name="sync-dev", description="Sync slash commands with dev server.")
-    @app_commands.guilds(discord.Object(id=537887803774730270))
-    async def sync_dev(self, interaction: discord.Interaction):
-        c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
-        await interaction.response.send_message(f"Synced {len(c)} dev commands.", ephemeral=True)
-
-    @app_commands.command(name="sync-global", description="Sync slash commands globally.")
-    @app_commands.guilds(discord.Object(id=537887803774730270))
-    async def sync_global(self, interaction: discord.Interaction):
-        c = await self.client.tree.sync()
-        await interaction.response.send_message(f"Synced {len(c)} commands globally.", ephemeral=True)
-
-
 async def setup(client: Bot):
     await client.add_cog(UtilCog(client))

@@ -58,14 +58,6 @@ class TagCog(commands.Cog, name="Tags"):
         tags = await self.client.db.fetch(f"SELECT * FROM tags WHERE name LIKE '{current}%' LIMIT 25")
         return [app_commands.Choice(name=tag["name"], value=tag["name"]) for tag in tags]
 
-    @add_tag.error
-    @rem_tag.error
-    @edit_tag.error
-    async def tag_error(self, interaction: discord.Interaction, error):
-        await interaction.followup.send(error, ephemeral=True)
-        print(type(error))
-        print(error)
-
 
 async def setup(client: commands.Bot):
     await client.add_cog(TagCog(client))
