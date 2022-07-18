@@ -1,5 +1,6 @@
 .DS_Store
 *.pyc
+*.swp
 conf.json
 **/__pycache__/
 .idea/
