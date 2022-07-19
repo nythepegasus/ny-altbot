@@ -87,17 +87,6 @@ class MyClient(commands.Bot):
 
 client = MyClient(json.load(open("conf.json")))
 
-@client.command()
-async def sync(ctx):
-    c = await client.tree.sync()
-    print(c)
-    await ctx.send(f"Synced {len(c)} global commands.")
-
-@client.command()
-async def sync_dev(ctx):
-    c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
-    await interaction.response.send_message(f"Synced {len(c)} dev commands.")
-
 @client.tree.error
 async def on_app_command_error(interaction: Interaction, error: AppCommandError):
     if isinstance(error, (MissingRole, MissingAnyRole)):
