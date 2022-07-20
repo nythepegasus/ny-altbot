@@ -61,3 +61,4 @@ class TagCog(commands.Cog, name="Tags"):
 
 async def setup(client: commands.Bot):
     await client.add_cog(TagCog(client))
+

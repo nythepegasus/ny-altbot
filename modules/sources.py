@@ -75,3 +75,4 @@ class SourcesCog(Cog, name="Sources"):
 
 async def setup(client: Bot):
     await client.add_cog(SourcesCog(client))
+
