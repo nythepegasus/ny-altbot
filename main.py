@@ -92,6 +92,9 @@ async def on_app_command_error(interaction: Interaction, error: AppCommandError)
     if isinstance(error, (MissingRole, MissingAnyRole)):
         await interaction.response.send_message(error, ephemeral=True)
         return
+    else:
+        print(error)
+        raise error
 
 client.run()
 
