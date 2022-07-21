@@ -19,7 +19,6 @@ class UtilCog(Cog, name="Utility"):
     async def dev_apple_status(self, interaction: discord.Interaction):
         pass
 
-
 async def setup(client: Bot):
     await client.add_cog(UtilCog(client))
 
