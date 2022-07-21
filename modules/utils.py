@@ -19,15 +19,6 @@ class UtilCog(Cog, name="Utility"):
     async def dev_apple_status(self, interaction: discord.Interaction):
         pass
 
-    @command()
-    async def sync(self, ctx):
-        c = await self.client.tree.sync()
-        await ctx.send(f"Synced {len(c)} global commands.")
-
-    @command()
-    async def sync_dev(self, ctx):
-        c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
-        await interaction.response.send_message(f"Synced {len(c)} dev commands.")
 
 async def setup(client: Bot):
     await client.add_cog(UtilCog(client))

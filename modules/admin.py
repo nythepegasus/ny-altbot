@@ -35,7 +35,7 @@ class AdminCog(Cog, name="Admin"):
         except Exception as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
 
-    @command(name="reload_cog", hidden=True, help="Reloads` a cog.")
+    @command(name="reload_cog", hidden=True, help="Reloads a cog.")
     async def unload_cog(self, ctx, *, cog: str):
         try:
             await self.client.unload_extension(cog)
@@ -44,6 +44,15 @@ class AdminCog(Cog, name="Admin"):
         except Exception as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
 
+    @command(name="sync", hidden=True, help="Sync application commands.")
+    async def sync(self, ctx):
+        c = await self.client.tree.sync()
+        await ctx.send(f"Synced {len(c)} global commands.")
+
+    @command(name="sync_dev", hidden=True, help="Sync development application commands.")
+    async def sync_dev(self, ctx):
+        c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
+        await interaction.response.send_message(f"Synced {len(c)} dev commands.")
 async def setup(client: Bot):
     await client.add_cog(AdminCog(client))
 
