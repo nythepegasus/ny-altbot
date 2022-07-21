@@ -16,30 +16,29 @@ class AdminCog(Cog, name="Admin"):
         print(ctx)
         print(error)
 
-    @command(name="load_cog", hidden=True, help="Loads a cog.")
+    @command(name="load", hidden=True, help="Loads a cog.")
     async def load_cog(self, ctx, *, cog: str):
         try:
-            await self.client.load_extension(cog)
+            await self.client.load_extension(f"modules.{cog}")
         except Exception as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
         else:
             await ctx.send(f"`{cog}` has been loaded!", delete_after=5)
 
-    @command(name="unload_cog", hidden=True, help="Unloads a cog.")
+    @command(name="unload", hidden=True, help="Unloads a cog.")
     async def unload_mod(self, ctx, *, cog: str):
         if cog == "modules.admin":
             return await ctx.send("Cowardly refusing to unload admin cog.", delete_after=5)
         try:
-            await self.client.unload_extension(cog)
+            await self.client.unload_extension(f"modules.{cog}")
             return await ctx.send(f"Unloaded cog: `{cog}`", delete_after=5)
         except Exception as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
 
-    @command(name="reload_cog", hidden=True, help="Reloads a cog.")
+    @command(name="reload", hidden=True, help="Reloads a cog.")
     async def unload_cog(self, ctx, *, cog: str):
         try:
-            await self.client.unload_extension(cog)
-            await self.client.load_extension(cog)
+            await self.client.reload_extension(f"modules.{cog}")
             return await ctx.send(f"`{cog}` has been reloaded.", delete_after=5)
         except Exception as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
