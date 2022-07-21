@@ -1,3 +1,4 @@
+import asyncio
 import discord
 from discord.ext.commands import Bot, Cog, command
 
@@ -52,6 +53,23 @@ class AdminCog(Cog, name="Admin"):
     async def sync_dev(self, ctx):
         c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
         await interaction.response.send_message(f"Synced {len(c)} dev commands.")
+
+    @command(name="update", hidden=True, help="Update the bot.")
+    async def update_bot(self, ctx):
+        """We should git pull, and reload all the modules"""
+        proc = await asyncio.create_subprocess_exec(
+                "git", "pull", stdout=asyncio.subprocess.PIPE
+               )
+        data = await proc.stdout.readline()
+        line = data.decode('ascii').rstrip()
+        await proc.wait()
+        print(line)
+
+        for cog in self.client.conf_data["modules"]:
+            await self.client.reload_extension(cog)
+
+        await ctx.send("Updated the bot!", delete_after=5)
+
 async def setup(client: Bot):
     await client.add_cog(AdminCog(client))
 
