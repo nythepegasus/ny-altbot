@@ -1,18 +1,23 @@
 import discord
 from discord.ext.commands import Bot, Cog, command
 
-
 class AdminCog(Cog, name="Admin"):
     def __init__(self, client):
         self.client = client
         self.description = "This module is only for the developer"
 
+    async def cog_before_invoke(self, ctx):
+        await ctx.message.delete()
+
     async def cog_check(self, ctx):
         return await self.client.is_owner(ctx.author)
 
+    async def cog_command_error(self, ctx, error):
+        print(ctx)
+        print(error)
+
     @command(name="load_cog", hidden=True, help="Loads a cog.")
     async def load_cog(self, ctx, *, cog: str):
-        await ctx.message.delete()
         try:
             await self.client.load_extension(cog)
         except Exception as e:
@@ -22,7 +27,6 @@ class AdminCog(Cog, name="Admin"):
 
     @command(name="unload_cog", hidden=True, help="Unloads a cog.")
     async def unload_mod(self, ctx, *, cog: str):
-        await ctx.message.delete()
         if cog == "modules.admin":
             return await ctx.send("Cowardly refusing to unload admin cog.", delete_after=5)
         try:
@@ -33,7 +37,6 @@ class AdminCog(Cog, name="Admin"):
 
     @command(name="reload_cog", hidden=True, help="Reloads` a cog.")
     async def unload_cog(self, ctx, *, cog: str):
-        await ctx.message.delete()
         try:
             await self.client.unload_extension(cog)
             await self.client.load_extension(cog)

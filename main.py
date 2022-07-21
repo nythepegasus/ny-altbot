@@ -10,7 +10,7 @@ from discord import Embed, Interaction
 from discord.app_commands import AppCommandError, MissingPermissions
 from discord.app_commands.errors import MissingRole, MissingAnyRole
 from discord.ext import commands, tasks
-
+from discord.ext.commands.errors import CheckFailure, CommandNotFound
 
 class MyClient(commands.Bot):
     def __init__(self, conf_data: dict, *args, **kwargs):
@@ -86,6 +86,16 @@ class MyClient(commands.Bot):
 
 
 client = MyClient(json.load(open("conf.json")))
+
+@client.listen()
+async def on_command_error(ctx, error):
+    await ctx.message.delete()
+    if isinstance(error, CheckFailure):
+        print(f"Ignoring Check Failure from user: {ctx.author.name}")
+    elif isinstance(error, CommandNotFound):
+        print(f"Ignoring command not found, no normal user should be using text commands: {ctx.author.name}\n {error}")
+    else:
+        raise error
 
 @client.tree.error
 async def on_app_command_error(interaction: Interaction, error: AppCommandError):
