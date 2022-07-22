@@ -1,6 +1,7 @@
+import json
 import asyncio
 import discord
-from discord.ext.commands import Bot, Cog, command
+from discord.ext.commands import Bot, Cog, command, ExtensionAlreadyLoaded, ExtensionNotFound
 
 class AdminCog(Cog, name="Admin"):
     def __init__(self, client):
@@ -69,6 +70,23 @@ class AdminCog(Cog, name="Admin"):
             await self.client.reload_extension(cog)
 
         await ctx.send("Updated the bot!", delete_after=5)
+
+    @command(name="add_cog", hidden=True, help="Add cog to bot.")
+    async def add_mod(self, ctx, *, cog: str):
+        conf = json.load(open("conf.json"))
+        try:
+            await self.client.load_extension(f"modules.{cog}")
+        except (ExtensionNotFound, ExtensionAlreadyLoaded) as e:
+            if isinstance(e, ExtensionNotFound):
+                return await ctx.send(f"Couldn't find `{cog}` to add to startup.", delete_after=5)
+            elif isinstance(e, ExtensionAlreadyLoaded):
+                pass
+
+        if f"modules.{cog}" in conf["modules"]:
+            return await ctx.send(f"`{cog}` is already in startup.", delete_after=5)
+        conf["modules"].append(f"modules.{cog}")
+        json.dump(conf, open("conf.json", "w"), indent=4)
+        return await ctx.send(f"`{cog}` has been added to bot startup!", delete_after=5)
 
 async def setup(client: Bot):
     await client.add_cog(AdminCog(client))
