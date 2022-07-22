@@ -33,7 +33,7 @@ class AdminCog(Cog, name="Admin"):
             return await ctx.send("Cowardly refusing to unload admin cog.", delete_after=5)
         try:
             await self.client.unload_extension(f"modules.{cog}")
-            return await ctx.send(f"Unloaded cog: `{cog}`", delete_after=5)
+            return await ctx.send(f"`{cog}` has been unloaded!", delete_after=5)
         except Exception as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
 
@@ -41,7 +41,7 @@ class AdminCog(Cog, name="Admin"):
     async def unload_cog(self, ctx, *, cog: str):
         try:
             await self.client.reload_extension(f"modules.{cog}")
-            return await ctx.send(f"`{cog}` has been reloaded.", delete_after=5)
+            return await ctx.send(f"`{cog}` has been reloaded!", delete_after=5)
         except Exception as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
 
