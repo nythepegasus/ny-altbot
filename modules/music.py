@@ -61,7 +61,7 @@ class Music(Cog):
         Get queue, and slice each page of the queue
         """
         if not interaction.guild.voice_client:
-            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+            return await interaction.response.send_message("Nothing is currently playing in this guild!", ephemeral=True)
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
@@ -83,7 +83,7 @@ class Music(Cog):
     @app_commands.command(name="skip", description="Skip song.")
     async def skip(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
-            vc: wavelink.Player = await interaction.user.voice.channel.connect(cls=wavelink.Player)
+            return await interaction.response.send_message("Nothing is currently playing in this guild!", ephemeral=True)
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
