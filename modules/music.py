@@ -62,17 +62,16 @@ class Music(Cog):
 
         cur_queue = list(vc.queue._queue)
         embed = discord.Embed(title="Current Queue")
-        embed.add_field(name="Currently Playing", value=f"[{vs.track.title[0:50]}]({vc.track.info['uri']})", inline=True)
         embed.add_field(name="Position in Queue", value=vc.queue.history.count+1, inline=True)
         embed.add_field(name="Length of Queue", value=vc.queue.count, inline=True)
-        duration = str(datetime.timedelta(sum([song.length for song in cur_queue])))
+        duration = str(datetime.timedelta(seconds=sum([song.length for song in cur_queue])))
         embed.add_field(name="Duration of Queue", value=duration, inline=True)
         songs = ""
-        for p, song in enumerate(cur_queue[(page-1*10):((page)*10)]):
-            duration += song.length
-            songs += f"`{(page-1)*10+p+1:02}.` [{song.title[0:50]}]({song.info['uri']})\n"
-        embed.add_field(name="**Next Up**", value=songs, inline=False)
-        embed.set_footer(text=f"Songs {(page-1)*10+1} to {(page+1)*10}")
+        for p, song in enumerate(cur_queue[((page-1)*10):(page*10)]):
+            songs += f"`{((page-1)*10+p+1):02}.` [{song.title[0:50]}]({song.info['uri']})\n"
+        embed.add_field(name="**Next Up**", value=songs or "No more songs!", inline=False)
+        songs_left = ((page-1)*10)+len(cur_queue[((page-1)*10):(page*10)])
+        embed.set_footer(text=f"Songs {(page-1)*10+1} to {songs_left}")
 
         await interaction.response.send_message(embed=embed)
 
