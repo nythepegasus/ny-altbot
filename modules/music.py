@@ -1,4 +1,5 @@
 import discord
+import datetime
 import wavelink
 from discord import app_commands
 from discord.ext.commands import Bot, Cog
@@ -50,7 +51,7 @@ class Music(Cog):
             await interaction.response.send_message(f"Added `{track.title}` to the queue...", ephemeral=True)
 
     @app_commands.command(name="queue", description="See the current queue of songs.")
-    async def queue(self, interaction: discord.Interaction, page: int = 0):
+    async def queue(self, interaction: discord.Interaction, page: int = 1):
         """
         Get queue, and slice each page of the queue
         """
@@ -61,17 +62,17 @@ class Music(Cog):
 
         cur_queue = list(vc.queue._queue)
         embed = discord.Embed(title="Current Queue")
-        embed.add_field(name="Currently Playing", value=vc.track.title, inline=True)
-        embed.add_field(name="Position in Queue", value=vc.queue.find_position(vc.track), inline=True)
+        embed.add_field(name="Currently Playing", value=f"[{vs.track.title[0:50]}]({vc.track.info['uri']})", inline=True)
+        embed.add_field(name="Position in Queue", value=vc.queue.history.count+1, inline=True)
         embed.add_field(name="Length of Queue", value=vc.queue.count, inline=True)
-        duration = sum([song.length for song in cur_queue])
-        songs = ""
-        for p, song in enumerate(cur_queue[0:((page+1)*10)]):
-            duration += song.length
-            songs += f"`{p:02}.` ({song.title})[{song.info.uri}]"
+        duration = str(datetime.timedelta(sum([song.length for song in cur_queue])))
         embed.add_field(name="Duration of Queue", value=duration, inline=True)
+        songs = ""
+        for p, song in enumerate(cur_queue[(page-1*10):((page)*10)]):
+            duration += song.length
+            songs += f"`{(page-1)*10+p+1:02}.` [{song.title[0:50]}]({song.info['uri']})\n"
         embed.add_field(name="**Next Up**", value=songs, inline=False)
-        embed.set_footer(text=f"10/{len(cur_queue)}")
+        embed.set_footer(text=f"Songs {(page-1)*10+1} to {(page+1)*10}")
 
         await interaction.response.send_message(embed=embed)
 
