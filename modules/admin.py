@@ -48,12 +48,12 @@ class AdminCog(Cog, name="Admin"):
     @command(name="sync", hidden=True, help="Sync application commands.")
     async def sync(self, ctx):
         c = await self.client.tree.sync()
-        await ctx.send(f"Synced {len(c)} global commands.")
+        await ctx.send(f"Synced {len(c)} global commands.", delete_after=5)
 
     @command(name="sync_dev", hidden=True, help="Sync development application commands.")
     async def sync_dev(self, ctx):
         c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
-        await interaction.response.send_message(f"Synced {len(c)} dev commands.")
+        await interaction.response.send_message(f"Synced {len(c)} dev commands.", delete_after=5)
 
     @command(name="update", hidden=True, help="Update the bot.")
     async def update_bot(self, ctx):
