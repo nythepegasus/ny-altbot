@@ -1,9 +1,11 @@
+import re
 import discord
 import datetime
 import wavelink
 from discord import app_commands
 from discord.ext.commands import Bot, Cog
 
+URL_RE = re.compile("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
 class Music(Cog):
     def __init__(self, client: Bot):
@@ -41,7 +43,10 @@ class Music(Cog):
         else:
             vc: wavelink.Player = interaction.guild.voice_client
 
-        track: wavelink.YouTubeTrack = await wavelink.YouTubeTrack.search(query, return_first=True)
+        if URL_RE.match(query):
+            track: wavelink.YouTubeTrack = wavelink.NodePool.get_node().get_tracks(wavelink.YouTubeTrack, query)
+        else:
+            track: wavelink.YouTubeTrack = await wavelink.YouTubeTrack.search(query, return_first=True)
 
         if vc.queue.is_empty and not vc.is_playing():
             await vc.play(track)
