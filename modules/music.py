@@ -68,7 +68,7 @@ class Music(Cog):
         cur_queue = list(vc.queue._queue)
         embed = discord.Embed(title="Current Queue")
         embed.add_field(name="Position in Queue", value=vc.queue.history.count+1, inline=True)
-        embed.add_field(name="Length of Queue", value=vc.queue.count, inline=True)
+        embed.add_field(name="Rest of Queue", value=vc.queue.count, inline=True)
         duration = str(datetime.timedelta(seconds=sum([song.length for song in cur_queue])))
         embed.add_field(name="Duration of Queue", value=duration, inline=True)
         songs = ""
