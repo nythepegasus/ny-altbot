@@ -112,6 +112,16 @@ class Music(Cog):
             await vc.stop()
             return await interaction.response.send_message(f"Skipped song, playing `{vc.queue[0] or vc.queue}`")
 
+    @app_commands.command(name="disconnect", description="Disconnects the bot from the voice channel.")
+    async def disconnect_bot(self, interaction: discord.Interaction):
+        if not interaction.guild.voice_client:
+            return await interaction.response.send_message("Nothing is currently playing in this guild!", ephemeral=True)
+        else:
+            vc: wavelink.Player = interaction.guild.voice_client
+        await vc.disconnect()
+
+        await interaction.response.send_message("Disconnected!")
+
 async def setup(client: Bot):
     await client.add_cog(Music(client))
 
