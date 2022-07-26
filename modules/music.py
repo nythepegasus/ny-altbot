@@ -80,6 +80,25 @@ class Music(Cog):
 
         await interaction.response.send_message(embed=embed)
 
+    @app_commands.command(name="nowplaying", description="Display information about the current playing song.")
+    async def nowplaying(self, interaction: discord.Interaction):
+        if not interaction.guild.voice_client:
+            return await interaction.response.send_message("Nothing is currently playing in this guild!", ephemeral=True)
+        else:
+            vc: wavelink.Player = interaction.guild.voice_client
+
+        info = vc.track.info
+        cpos = datetime.timedelta(seconds=abs(int(vc.position)))
+        print(cpos)
+        print(vc.position)
+        dur = datetime.timedelta(seconds=int(vc.track.length))
+
+        embed = discord.Embed(title="Currently Playing", description=f"[{info['title']}]({info['uri']})")
+        embed.add_field(name="**Duration**", value=f"{cpos}/{dur}", inline=False)
+        embed.set_thumbnail(url=f"https://i.ytimg.com/vi/{info['identifier']}/maxresdefault.jpg")
+
+        await interaction.response.send_message(embed=embed)
+
     @app_commands.command(name="skip", description="Skip song.")
     async def skip(self, interaction: discord.Interaction):
         if not interaction.guild.voice_client:
