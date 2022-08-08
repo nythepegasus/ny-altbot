@@ -1,5 +1,6 @@
 import sys
 import json
+import random
 import aiohttp
 import asyncpg
 import discord
@@ -27,6 +28,9 @@ class MyClient(commands.Bot):
     async def on_ready(self) -> None:
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
+        status = random.choice(["DS", "N64", "GBA", "GBC", "SNES", "NES"])
+        presence = discord.Game(f"{status} games on Delta with {len(self.users)} others!")
+        await self.change_presence(activity=presence)
 
     @tasks.loop(minutes=5)
     async def update_apps(self) -> None:
@@ -58,6 +62,12 @@ class MyClient(commands.Bot):
                                 guild = self.get_guild(channel.guild.id)
                                 ret_msg = " ".join([guild.get_role(r["role_id"]).mention for r in ping_roles])
                                 await channel.send(content=ret_msg, embed=emb)
+
+    @tasks.loop(minutes=10)
+    async def change_status(self) -> None:
+        status = random.choice(["DS", "N64", "GBA", "GBC", "SNES", "NES"])
+        presence = discord.Game(f"{status} games on Delta with {len(self.users)} others!")
+        await self.change_presence(activity=presence)
 
     async def setup_hook(self) -> None:
         self.db = await asyncpg.connect(**self.conf_data["postgres"])
