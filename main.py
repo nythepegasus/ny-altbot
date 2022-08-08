@@ -28,9 +28,7 @@ class MyClient(commands.Bot):
     async def on_ready(self) -> None:
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
-        status = random.choice(["DS", "N64", "GBA", "GBC", "SNES", "NES"])
-        presence = discord.Game(f"{status} games on Delta with {len(self.users)} others!")
-        await self.change_presence(activity=presence)
+        self.change_status.start()
 
     @tasks.loop(minutes=5)
     async def update_apps(self) -> None:
