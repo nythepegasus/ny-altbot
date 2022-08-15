@@ -15,7 +15,7 @@ class SourcesCog(Cog, name="Sources"):
     @app_commands.checks.has_any_role("Mods", "Helpers")
     async def add_source(self, interaction: discord.Interaction, source_name: str, source_url: str) -> None:
         await interaction.response.send_message(
-            f"[{source_name}](https://delta-skins.github.io/sourceinstall.html?altstore://url?={source_url})"
+            f"[{source_name}](https://delta-skins.github.io/sourceinstall.html?altstore://source?url={source_url})"
         )
 
     @app_commands.command(name="track-source", description="Add an AltSource to track with AltBot")
