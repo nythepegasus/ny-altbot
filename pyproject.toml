@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "ny-altbot"
+version = "0.1.0"
+description = "Ny's implementation of the Delta server's AltBot."
+authors = ["Nythepegasus <nythepegasus84@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+"discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
+asyncpg = "^0.26.0"
+packaging = "^21.3"
+wavelink = "^1.3.2"
+aiohttp = "^3.8.1"
+
+[tool.poetry.dev-dependencies]
+taskipy = "^1.10.2"
+flake8 = "^5.0.4"
+
+[tool.taskipy.tasks]
+run = "python main.py"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
