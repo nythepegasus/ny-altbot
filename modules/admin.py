@@ -1,10 +1,11 @@
 import json
 import asyncio
 import discord
-from discord.ext.commands import Bot, Cog, command, ExtensionAlreadyLoaded, ExtensionNotFound
+from discord.ext.commands import Bot, Cog, command, ExtensionNotLoaded, ExtensionAlreadyLoaded, ExtensionNotFound
+
 
 class AdminCog(Cog, name="Admin"):
-    def __init__(self, client):
+    def __init__(self, client: Bot):
         self.client = client
         self.description = "This module is only for the developer"
 
@@ -22,7 +23,7 @@ class AdminCog(Cog, name="Admin"):
     async def load_cog(self, ctx, *, cog: str):
         try:
             await self.client.load_extension(f"modules.{cog}")
-        except Exception as e:
+        except (ExtensionAlreadyLoaded, ExtensionNotFound) as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
         else:
             await ctx.send(f"`{cog}` has been loaded!", delete_after=5)
@@ -34,7 +35,7 @@ class AdminCog(Cog, name="Admin"):
         try:
             await self.client.unload_extension(f"modules.{cog}")
             return await ctx.send(f"`{cog}` has been unloaded!", delete_after=5)
-        except Exception as e:
+        except (ExtensionNotLoaded, ExtensionNotFound) as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
 
     @command(name="reload", hidden=True, help="Reloads a cog.")
@@ -42,7 +43,7 @@ class AdminCog(Cog, name="Admin"):
         try:
             await self.client.reload_extension(f"modules.{cog}")
             return await ctx.send(f"`{cog}` has been reloaded!", delete_after=5)
-        except Exception as e:
+        except (ExtensionNotLoaded, ExtensionNotFound) as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
 
     @command(name="sync", hidden=True, help="Sync application commands.")
@@ -53,14 +54,14 @@ class AdminCog(Cog, name="Admin"):
     @command(name="sync_dev", hidden=True, help="Sync development application commands.")
     async def sync_dev(self, ctx):
         c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
-        await interaction.response.send_message(f"Synced {len(c)} dev commands.", delete_after=5)
+        await ctx.send(f"Synced {len(c)} dev commands.", delete_after=5)
 
     @command(name="update", hidden=True, help="Update the bot.")
     async def update_bot(self, ctx):
         """We should git pull, and reload all the modules"""
         proc = await asyncio.create_subprocess_exec(
-                "git", "pull", stdout=asyncio.subprocess.PIPE
-               )
+            "git", "pull", stdout=asyncio.subprocess.PIPE
+        )
         data = await proc.stdout.readline()
         line = data.decode('ascii').rstrip()
         await proc.wait()
@@ -88,6 +89,6 @@ class AdminCog(Cog, name="Admin"):
         json.dump(conf, open("conf.json", "w"), indent=4)
         return await ctx.send(f"`{cog}` has been added to bot startup!", delete_after=5)
 
+
 async def setup(client: Bot):
     await client.add_cog(AdminCog(client))
-

@@ -35,7 +35,7 @@ class SourcesCog(Cog, name="Sources"):
     @app_commands.command(name="list-sources", description="List all tracked AltSources")
     async def list_sources(self, interaction: discord.Interaction):
         sources = [s['name'] for s in await self.client.db.fetch("SELECT name FROM sources")]
-        await interaction.response.send_message("Current sources:\n"+'\n'.join(sources), ephemeral=True)
+        await interaction.response.send_message("Current sources:\n" + '\n'.join(sources), ephemeral=True)
 
     @app_commands.command(name="add-update-channel", description="Add an update channel to track AltSource apps.")
     @app_commands.describe(channel="The channel to receive app update notifications.")
@@ -68,11 +68,10 @@ class SourcesCog(Cog, name="Sources"):
 
     @add_ping_role.autocomplete("app_id")
     async def ping_type_ac(self, interaction: discord.Interaction, current: str) -> list[app_commands.Choice[str]]:
-        types = sorted([a["id"] for a in await self.client.db.fetch(f"SELECT id FROM apps")])
+        types = sorted([a["id"] for a in await self.client.db.fetch("SELECT id FROM apps")])
         return [app_commands.Choice(name=t.replace("com.rileytestut.", "").replace(".", " "), value=t)
                 for t in types if current.lower() in t.lower()]
 
 
 async def setup(client: Bot):
     await client.add_cog(SourcesCog(client))
-

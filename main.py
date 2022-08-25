@@ -8,10 +8,11 @@ import traceback
 from datetime import datetime
 from packaging import version
 from discord import Embed, Interaction
-from discord.app_commands import AppCommandError, MissingPermissions
+from discord.app_commands import AppCommandError
 from discord.app_commands.errors import MissingRole, MissingAnyRole
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import CheckFailure, CommandNotFound
+
 
 class MyClient(commands.Bot):
     def __init__(self, conf_data: dict, *args, **kwargs):
@@ -51,7 +52,7 @@ class MyClient(commands.Bot):
                             emb.add_field(name="Version:", value=f"{old_app['version']} -> {app['version']}", inline=False)
                             emb.add_field(name="Changelog:", value=app['versionDescription'], inline=False)
                             emb.set_thumbnail(url=app['iconURL'])
-                            emb.set_footer(text=f"AltBot v. 1.0")
+                            emb.set_footer(text="AltBot v. 1.0")
                             for channel in self.update_channels:
                                 ping_roles = await self.db.fetch(f"SELECT role_id FROM ping_roles "
                                                                  f"WHERE guild_id = {channel.guild.id} AND "
@@ -97,6 +98,7 @@ class MyClient(commands.Bot):
 
 client = MyClient(json.load(open("conf.json")))
 
+
 @client.listen()
 async def on_command_error(ctx, error):
     await ctx.message.delete()
@@ -107,6 +109,7 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
+
 @client.tree.error
 async def on_app_command_error(interaction: Interaction, error: AppCommandError):
     if isinstance(error, (MissingRole, MissingAnyRole)):
@@ -116,5 +119,5 @@ async def on_app_command_error(interaction: Interaction, error: AppCommandError)
         print(error)
         raise error
 
-client.run()
 
+client.run()

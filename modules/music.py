@@ -7,6 +7,7 @@ from discord.ext.commands import Bot, Cog
 
 URL_RE = re.compile("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
+
 class Music(Cog):
     def __init__(self, client: Bot):
         self.client = client
@@ -17,7 +18,7 @@ class Music(Cog):
         await self.client.wait_until_ready()
 
         await wavelink.NodePool.create_node(bot=self.client,
-                                            host="45.33.29.114",
+                                            host="0.0.0.0",
                                             port=2333,
                                             password="TwiNkie45?!")
 
@@ -67,16 +68,16 @@ class Music(Cog):
 
         cur_queue = list(vc.queue._queue)
         embed = discord.Embed(title="Current Queue")
-        embed.add_field(name="Position in Queue", value=vc.queue.history.count+1, inline=True)
+        embed.add_field(name="Position in Queue", value=vc.queue.history.count + 1, inline=True)
         embed.add_field(name="Rest of Queue", value=vc.queue.count, inline=True)
         duration = str(datetime.timedelta(seconds=sum([song.length for song in cur_queue])))
         embed.add_field(name="Duration of Queue", value=duration, inline=True)
         songs = ""
-        for p, song in enumerate(cur_queue[((page-1)*10):(page*10)]):
-            songs += f"`{((page-1)*10+p+1):02}.` [{song.title[0:50]}]({song.info['uri']})\n"
+        for p, song in enumerate(cur_queue[((page - 1) * 10):(page * 10)]):
+            songs += f"`{((page-1) * 10 + p + 1):02}.` [{song.title[0:50]}]({song.info['uri']})\n"
         embed.add_field(name="**Next Up**", value=songs or "No more songs!", inline=False)
-        songs_left = ((page-1)*10)+len(cur_queue[((page-1)*10):(page*10)])
-        embed.set_footer(text=f"Songs {(page-1)*10+1} to {songs_left}")
+        songs_left = ((page - 1) * 10) + len(cur_queue[((page - 1) * 10):(page * 10)])
+        embed.set_footer(text=f"Songs {(page - 1) * 10 + 1} to {songs_left}")
 
         await interaction.response.send_message(embed=embed)
 
@@ -122,6 +123,6 @@ class Music(Cog):
 
         await interaction.response.send_message("Disconnected!")
 
+
 async def setup(client: Bot):
     await client.add_cog(Music(client))
-

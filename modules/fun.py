@@ -1,6 +1,3 @@
-import json
-import discord
-from discord import app_commands
 from discord.ext.commands import Bot, Cog
 
 
@@ -9,6 +6,6 @@ class FunCog(Cog, description="Fun commands."):
         self.client = client
         self.session = self.client.session
 
+
 async def setup(client: Bot):
     await client.add_cog(FunCog(client))
-

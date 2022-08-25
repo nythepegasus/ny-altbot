@@ -3,10 +3,65 @@ from discord.ext.commands import Cog, Bot
 from discord import RawReactionActionEvent, app_commands
 
 
+class iPhoneDropdown(discord.ui.Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label="iPhone 5S", description=""),
+            discord.SelectOption(label="iPhone 6/Plus", description=""),
+            discord.SelectOption(label="iPhone 7/Plus", description=""),
+            discord.SelectOption(label="iPhone X/8/Plus", description=""),
+            discord.SelectOption(label="iPhone SE (2016)", description=""),
+            discord.SelectOption(label="iPhone XR/XS/Max", description=""),
+            discord.SelectOption(label="iPhone 11/Pro", description=""),
+            discord.SelectOption(label="iPhone SE (2020)", description=""),
+            discord.SelectOption(label="iPhone 12/Mini/Pro/Max", description=""),
+            discord.SelectOption(label="iPhone 13/Mini", description=""),
+            discord.SelectOption(label="iPhone SE (2022)", description="")
+        ]
+
+        super().__init__(placeholder="Choose your iPhone model", min_values=1, max_values=1, options=options, custom_id="dropdown:iphone")
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f"Your iPhone model is {self.values[0]}.", ephemeral=True)
+
+
+class iOSDropdown(discord.ui.Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label="<= iOS 12", description=""),
+            discord.SelectOption(label="iOS 13.0 - 13.3.1", description=""),
+            discord.SelectOption(label="iOS 13.3.1 - 13.7", description=""),
+            discord.SelectOption(label="iOS 14.0 - 14.3", description=""),
+            discord.SelectOption(label="iOS 14.3 - 14.8.1", description=""),
+            discord.SelectOption(label="iOS 15.0 - 15.1.1", description=""),
+            discord.SelectOption(label="iOS 15.2+", description=""),
+            discord.SelectOption(label="iOS 16+", description="")
+        ]
+        super().__init__(placeholder="Choose your iOS version", min_values=1, max_values=1, options=options, custom_id="dropdown:ios")
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f"Your iOS version is {self.values[0]}.", ephemeral=True)
+
+
+class RoleDropdownView(discord.ui.View):
+    def __init__(self, select: discord.ui.Select):
+        super().__init__(timeout=None)
+
+        self.add_item(select())
+
+
 class ReactionCog(Cog, name="Reaction Roles"):
     def __init__(self, client: Bot):
         self.client = client
         self.description = "This module adds support for reaction roles."
+        self.client.add_view(RoleDropdownView(iOSDropdown))
+        self.client.add_view(RoleDropdownView(iPhoneDropdown))
+
+    @app_commands.command(name="prepare-roles", description="Send dropdowns to channel.")
+    async def prepare_reroles(self, interaction: discord.Interaction):
+        await interaction.response.send_message("Sent messages", ephemeral=True)
+        await interaction.channel.send("Pick your iPhone model:", view=RoleDropdownView(iPhoneDropdown))
+        await interaction.channel.send("Pick your iOS version:", view=RoleDropdownView(iOSDropdown))
 
     async def process_reaction(self, payload: RawReactionActionEvent, r_type: str = None) -> None:
         if payload.user_id == self.client.user.id:
@@ -99,4 +154,3 @@ class ReactionCog(Cog, name="Reaction Roles"):
 
 async def setup(client: Bot):
     await client.add_cog(ReactionCog(client))
-
