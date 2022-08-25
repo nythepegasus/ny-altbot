@@ -5,6 +5,7 @@ conf.json
 modules/tester.py
 **/__pycache__/
 .idea/
+.vscode/
 test/
 venv/
 LavaLinkServer/
