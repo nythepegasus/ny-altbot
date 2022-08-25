@@ -7,3 +7,4 @@ modules/tester.py
 .idea/
 test/
 venv/
+LavaLinkServer/
