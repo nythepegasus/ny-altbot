@@ -1,6 +1,5 @@
 import discord
-from discord.ext.commands import Cog, Bot
-from discord import app_commands
+from discord.ext.commands import Cog, Bot, command
 
 # TODO: Generate values and such from DB, for now everything is hardcoded
 
@@ -164,17 +163,25 @@ class ReactionCog(Cog, name="Reaction Roles"):
         self.client.add_view(RoleDropdownView(DevicesDropdown))
         self.client.add_view(RoleDropdownView(PingDropdown))
 
-    @app_commands.command(name="prepare-roles", description="Send dropdowns to channel.")
-    async def prepare_reroles(self, interaction: discord.Interaction):
-        await interaction.response.defer(ephemeral=True, thinking=True)
-        await interaction.channel.send("Pick your iPhone model:", view=RoleDropdownView(iPhoneDropdown))
-        await interaction.channel.send("Pick your iOS version:", view=RoleDropdownView(iOSDropdown))
-        await interaction.channel.send("Are you jailbroken:", view=RoleDropdownView(JailbrokenDropdown))
-        await interaction.channel.send("What would you consider your computer skill level:", view=RoleDropdownView(SkillDropdown))
-        await interaction.channel.send("Which computer OS do you use on your **MAIN** computer for AltServer:", view=RoleDropdownView(ComputerDropdown))
-        await interaction.channel.send("Which devices would you like to see AltStore/Delta on next:", view=RoleDropdownView(DevicesDropdown))
-        await interaction.channel.send("Choose the following that apply: ", view=RoleDropdownView(PingDropdown))
-        await interaction.followup.send("Sent messages", ephemeral=True)
+    async def cog_before_invoke(self, ctx):
+        await ctx.message.delete()
+
+    async def cog_check(self, ctx):
+        return await self.client.is_owner(ctx.author)
+
+    async def cog_command_error(self, ctx, error):
+        print(ctx)
+        print(error)
+
+    @command(name="prep-roles")
+    async def prepare_reroles(self, ctx):
+        await ctx.channel.send("Pick your iPhone model:", view=RoleDropdownView(iPhoneDropdown))
+        await ctx.channel.send("Pick your iOS version:", view=RoleDropdownView(iOSDropdown))
+        await ctx.channel.send("Are you jailbroken:", view=RoleDropdownView(JailbrokenDropdown))
+        await ctx.channel.send("What would you consider your computer skill level:", view=RoleDropdownView(SkillDropdown))
+        await ctx.channel.send("Which computer OS do you use on your **MAIN** computer for AltServer:", view=RoleDropdownView(ComputerDropdown))
+        await ctx.channel.send("Which devices would you like to see AltStore/Delta on next:", view=RoleDropdownView(DevicesDropdown))
+        await ctx.channel.send("Choose the following that apply: ", view=RoleDropdownView(PingDropdown))
 
 
 async def setup(client: Bot):
