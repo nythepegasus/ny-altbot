@@ -26,6 +26,7 @@ class iPhoneDropdown(RoleDropdown):
         options = [
             discord.SelectOption(label="iPhone 5S", description="", value="973604854259908608"),
             discord.SelectOption(label="iPhone 6/Plus", description="", value="973604873499205632"),
+            discord.SelectOption(label="iPhone 6S/Plus", description="", value="1012616086203674675"),
             discord.SelectOption(label="iPhone 7/Plus", description="", value="973604885515862096"),
             discord.SelectOption(label="iPhone X/8/Plus", description="", value="973604889664053268"),
             discord.SelectOption(label="iPhone SE (2016)", description="", value="973604895909351464"),
@@ -33,7 +34,7 @@ class iPhoneDropdown(RoleDropdown):
             discord.SelectOption(label="iPhone 11/Pro", description="", value="973604910841077801"),
             discord.SelectOption(label="iPhone SE (2020)", description="", value="973604938754170900"),
             discord.SelectOption(label="iPhone 12/Mini/Pro/Max", description="", value="973604942503895050"),
-            discord.SelectOption(label="iPhone 13/Mini", description="", value="973604948480770100"),
+            discord.SelectOption(label="iPhone 13/Mini/Pro/Max", description="", value="973604948480770100"),
             discord.SelectOption(label="iPhone SE (2022)", description="", value="973604945603473418")
         ]
 
@@ -83,7 +84,8 @@ class ComputerDropdown(RoleDropdown):
             discord.SelectOption(label="macOS 13", emoji=u"🍎", description="", value="1012525153864929320"),
             discord.SelectOption(label="<= Windows 8", emoji=u"\u231B", description="", value="847472981130084382"),
             discord.SelectOption(label="Windows 10", emoji=u"🪟", description="", value="973603196964589658"),
-            discord.SelectOption(label="Windows 11", emoji=u"🖼", description="", value="956247720631357601")
+            discord.SelectOption(label="Windows 11", emoji=u"🖼", description="", value="956247720631357601"),
+            discord.SelectOption(label="Linux", emoji=u"🐧", description="Not officially supported, we'll try our best!", value="1012616749193121803")
         ]
         super().__init__(placeholder="Choose your MAIN computer's OS", min_values=1, max_values=1, options=options, custom_id="dropdown:computer")
 
