@@ -35,7 +35,8 @@ class iPhoneDropdown(RoleDropdown):
             discord.SelectOption(label="iPhone SE (2020)", description="", value="973604938754170900"),
             discord.SelectOption(label="iPhone 12/Mini/Pro/Max", description="", value="973604942503895050"),
             discord.SelectOption(label="iPhone 13/Mini/Pro/Max", description="", value="973604948480770100"),
-            discord.SelectOption(label="iPhone SE (2022)", description="", value="973604945603473418")
+            discord.SelectOption(label="iPhone SE (2022)", description="", value="973604945603473418"),
+            discord.SelectOption(label="iPhone 14/Plus", description="", value="1021525000374734850")
         ]
 
         super().__init__(placeholder="Choose your iPhone model", min_values=1, max_values=1, options=options, custom_id="dropdown:iphone")
