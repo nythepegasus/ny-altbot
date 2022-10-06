@@ -89,7 +89,8 @@ class MyClient(commands.Bot):
         self.session = aiohttp.ClientSession()
 
     async def close(self):
-        await self.session.close()
+        if self.session is not None:
+            await self.session.close()
         await super().close()
 
     def run(self):
