@@ -12,7 +12,7 @@ class TagCog(commands.Cog, name="Tags"):
     @app_commands.command(name="tag", description="Send a tag")
     @app_commands.describe(tag_name="Name of the tag.")
     @app_commands.describe(user="The user to recommend this tag to.")
-    @app_commands.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper", "Testers")
+    @app_commands.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper", "Testers", "SideStore Testers")
     async def tag(self, interaction: discord.Interaction, tag_name: str, user: discord.User = None):
         tag = await self.client.db.fetchrow(f"SELECT * FROM tags WHERE name = '{tag_name}'")
         if tag is None:
