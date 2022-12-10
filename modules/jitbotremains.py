@@ -42,7 +42,7 @@ class JitBotRemainsCog(Cog):
         
         
         if "Python" in message.content or "python" in message.content.lower() and any(inc.lower() in message.content.lower() for inc in ["program", "code", "script"]):
-            return await message.channel.send("I think you're cool 😉")
+            return await message.reply("I think you're cool 😉")
         if "can i get an amen" in message.content.lower():
             return await message.channel.send("Amen!") # <3
         if "secret tunnel" in message.content.lower():
