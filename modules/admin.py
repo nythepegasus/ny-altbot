@@ -1,6 +1,7 @@
 import json
 import asyncio
 import discord
+from typing import Optional, Literal
 from discord.ext import commands
 from discord.ext.commands import Bot, Cog, command, ExtensionNotLoaded, ExtensionAlreadyLoaded, ExtensionNotFound
 
@@ -50,7 +51,7 @@ class AdminCog(Cog, name="Admin"):
     @command()
     @commands.guild_only()
     @commands.is_owner()
-    async def sync(ctx: discord.Context, guilds: Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
+    async def sync(ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
         if not guilds:
             if spec == "~":
                 synced = await ctx.bot.tree.sync(guild=ctx.guild)
