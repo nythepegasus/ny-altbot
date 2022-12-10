@@ -13,7 +13,7 @@ class RoleDropdown(discord.ui.Select):
         roles = [guild.get_role(int(r.value)) for r in self.options]
         role = guild.get_role(int(self.values[0]))
 
-        await interaction.followup.send(f"You chose: {role.name}.", ephemeral=True)
+        await interaction.followup.send(f"You now have this role: {role.name}.", ephemeral=True)
 
         await interaction.user.remove_roles(*roles)
         await interaction.user.add_roles(role)
