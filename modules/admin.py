@@ -51,7 +51,8 @@ class AdminCog(Cog, name="Admin"):
     @command()
     @commands.guild_only()
     @commands.is_owner()
-    async def sync(ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
+    async def sync(self, ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
+        print(f"{guilds = }")
         if not guilds:
             if spec == "~":
                 synced = await ctx.bot.tree.sync(guild=ctx.guild)
@@ -65,10 +66,11 @@ class AdminCog(Cog, name="Admin"):
             else:
                 synced = await ctx.bot.tree.sync()
 
-            await ctx.send(
-                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+            return await ctx.send(
+                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}",
+                delete_after=5
             )
-            return
+            
 
         ret = 0
         for guild in guilds:
