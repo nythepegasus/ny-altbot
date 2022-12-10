@@ -77,7 +77,7 @@ class AdminCog(Cog, name="Admin"):
             else:
                 ret += 1
 
-    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.", delete_after=5)
+        await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.", delete_after=5)
 
     @command(name="update", hidden=True, help="Update the bot.")
     async def update_bot(self, ctx):
