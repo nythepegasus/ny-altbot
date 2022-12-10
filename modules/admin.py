@@ -46,15 +46,38 @@ class AdminCog(Cog, name="Admin"):
         except (ExtensionNotLoaded, ExtensionNotFound) as e:
             await ctx.author.send(f"**`ERROR:`**\n {type(e).__name__} - {e}")
 
-    @command(name="sync", hidden=True, help="Sync application commands.")
-    async def sync(self, ctx):
-        c = await self.client.tree.sync()
-        await ctx.send(f"Synced {len(c)} global commands.", delete_after=5)
+    @command()
+    @commands.guild_only()
+    @commands.is_owner()
+    async def sync(ctx: Context, guilds: Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
+        if not guilds:
+            if spec == "~":
+                synced = await ctx.bot.tree.sync(guild=ctx.guild)
+            elif spec == "*":
+                ctx.bot.tree.copy_global_to(guild=ctx.guild)
+                synced = await ctx.bot.tree.sync(guild=ctx.guild)
+            elif spec == "^":
+                ctx.bot.tree.clear_commands(guild=ctx.guild)
+                await ctx.bot.tree.sync(guild=ctx.guild)
+                synced = []
+            else:
+                synced = await ctx.bot.tree.sync()
 
-    @command(name="sync_dev", hidden=True, help="Sync development application commands.")
-    async def sync_dev(self, ctx):
-        c = await self.client.tree.sync(guild=discord.Object(537887803774730270))
-        await ctx.send(f"Synced {len(c)} dev commands.", delete_after=5)
+            await ctx.send(
+                f"Synced {len(synced)} commands {'globally' if spec is None else 'to the current guild.'}"
+            )
+            return
+
+        ret = 0
+        for guild in guilds:
+            try:
+                await ctx.bot.tree.sync(guild=guild)
+            except discord.HTTPException:
+                pass
+            else:
+                ret += 1
+
+    await ctx.send(f"Synced the tree to {ret}/{len(guilds)}.", delete_after=5)
 
     @command(name="update", hidden=True, help="Update the bot.")
     async def update_bot(self, ctx):
