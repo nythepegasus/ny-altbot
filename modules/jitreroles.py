@@ -18,16 +18,32 @@ class RoleDropdown(discord.ui.Select):
         await interaction.user.remove_roles(*roles)
         await interaction.user.add_roles(role)
 
-
 class JitRoleDropdown(RoleDropdown):
     def __init__(self):
         options = [
             discord.SelectOption(label="SideStore Tester", description="Test out new features from the devs! Hands on changes/feedback *with* the devs!", emoji="🚀", value="1051087638389588050"),
             discord.SelectOption(label="SideStore Releases", description="Get pinged every time SideStore is updated, or there's news from the team.", emoji="🎉", value="1051087502229897216"),
-            discord.SelectOption(label="SideStore Feedback", description="Get pinged every time a SideStore dev wants specific information, but not necessarily test.", emoji="📋", value="1051087707201347624")
+            discord.SelectOption(label="SideStore Feedback", description="Get pinged every time a SideStore dev wants specific information, but not necessarily test.", emoji="📋", value="1051087707201347624"),
+            discord.SelectOption(label="Remove Ping Roles", description="This removes all ping roles, so that you can rechoose which roles you actually want.", value="0")
         ]
+        super().__init__(placeholder="Choose based on when you want to be pinged", min_values=1, max_values=3, options=options, custom_id="dropdown:jit_ping")
 
-        super().__init__(placeholder="Choose your ping status: ", min_values=1, max_values=1, options=options, custom_id="dropdown:jit_ping")
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.edit_message()
+
+        remove = bool([v for v in self.values if v == "0"])
+
+        guild: discord.Guild = interaction.guild
+        roles = [guild.get_role(int(role)) for role in self.values]
+
+        if remove:
+            roles = [guild.get_role(int(role.value)) for role in self.options if role.value != "0"]
+            await interaction.followup.send("Removed all ping roles!", ephemeral=True)
+            await interaction.user.remove_roles(*roles)
+        else:
+            await interaction.followup.send("You chose:\n" + '\n'.join([role.name for role in roles]), ephemeral=True)
+            await interaction.user.add_roles(*roles)
+
 
 
 
