@@ -1,5 +1,8 @@
+import ujson
 import random
 import discord
+import datetime
+from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import Bot, Cog
 
@@ -57,6 +60,28 @@ class JitBotRemainsCog(Cog):
 
         if random.random() < 0.005:
             return await message.channel.send(random.choice(randoms))
+
+
+    @app_commands.command(name="status", description="Check the status of JitStreamer server.")
+    async def status(self, interaction: discord.Interaction) -> None:
+        jitStatus = discord.Embed(title="Server Status", color=0x00ff00)
+        async with self.client.session.get('http://jitstreamer.com/census') as response:
+            res = await response.text()
+            data = ujson.loads(res)
+            jitStatus.add_field(name="Discord Bot: 🟢", value=f"How else you seeing this?", inline=False)
+            jitStatus.set_footer(text=f"JitStreamer Status v.{data['version']}")
+            if response.ok:
+                ret = f"Uptime:{data['uptime']}\n"
+                ret += f"Registered Users:{data['clients']}\n"
+                ret += f"Apps Fetched:{data['fetched']}\n"
+                ret += f"Apps Launched:{data['launched']}\n"
+                ret += f"Apps Attached:{data['attached']}\n"
+
+                jitStatus.add_field(name="JitStreamer: 🟢", value=ret, inline=False)
+            else:
+                jitStatus.color = 0xFF0000
+                jitStatus.add_field(name="JitStreamer: 🔴", value="Request timed out!!\n")
+            await interaction.response.send_message(embed=jitStatus)
 
 
 async def setup(client: Bot):
