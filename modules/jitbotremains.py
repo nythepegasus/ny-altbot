@@ -38,7 +38,7 @@ class JitBotRemainsCog(Cog):
 
     @Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.guild.id != 949183273383395328:
+        if message.guild is not None and message.guild.id != 949183273383395328:
             return
         if message.author == self.client.user or message.content.startswith("buh!"):
             return
@@ -47,8 +47,6 @@ class JitBotRemainsCog(Cog):
         except KeyError:
             pass
 
-        
-        
         if "Python" in message.content or "python" in message.content.lower() and any(inc.lower() in message.content.lower() for inc in ["program", "code", "script"]):
             return await message.reply("I think you're cool 😉")
         if "can i get an amen" in message.content.lower():
