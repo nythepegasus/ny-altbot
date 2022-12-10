@@ -9,6 +9,8 @@ class UtilCog(Cog, name="Utility"):
 
     @Cog.listener()
     async def on_thread_create(self, thread):
+        if thread.guild.id != 625714187078860810:
+            return
         if not isinstance(await self.client.fetch_channel(thread.parent_id), discord.ForumChannel):
             return
 
