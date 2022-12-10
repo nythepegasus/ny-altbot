@@ -71,11 +71,11 @@ class JitBotRemainsCog(Cog):
             jitStatus.add_field(name="Discord Bot: 🟢", value=f"How else you seeing this?", inline=False)
             jitStatus.set_footer(text=f"JitStreamer Status v.{data['version']}")
             if response.ok:
-                ret = f"Uptime:{data['uptime']}\n"
-                ret += f"Registered Users:{data['clients']}\n"
-                ret += f"Apps Fetched:{data['fetched']}\n"
-                ret += f"Apps Launched:{data['launched']}\n"
-                ret += f"Apps Attached:{data['attached']}\n"
+                ret = f"Uptime: {datetime.timedelta(seconds=data['uptime'])}\n"
+                ret += f"Registered Users: {data['clients']}\n"
+                ret += f"Apps Fetched: {data['fetched']}\n"
+                ret += f"Apps Launched: {data['launched']}\n"
+                ret += f"Apps Attached: {data['attached']}\n"
 
                 jitStatus.add_field(name="JitStreamer: 🟢", value=ret, inline=False)
             else:
