@@ -30,8 +30,13 @@ class JitBotRemainsCog(Cog):
     def __init__(self, client):
         self.client = client
 
+    def cog_check(self, ctx):
+        return ctx.guild.id == 949183273383395328
+
     @Cog.listener()
     async def on_message(self, message: discord.Message):
+        if message.guild.id == 949183273383395328:
+            return
         if message.author == self.client.user or message.content.startswith("buh!"):
             return
         try:
