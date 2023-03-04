@@ -18,11 +18,11 @@ rules = {
     "r2": "__**Keep swearing minimal**__\nLet's keep our community clean, please. While some swearing may be situationally appropriate, blatant dirty language will not be tolerated.",
     "r3": "__**Be considerate of others**__\nWe are all just learning here, and come from all experiences. Please be respectful of others' ideas and questions.",
     "r4": "__**Absolutely no discrimination**__\nDiscrimination against a person due to race, gender, religion or orientation will be served with an immediate and permanent ban. We will not allow hate in our community.",
-    "r5": "__**Python**__\nAbsolutely programming in Python, as it is pure magic and idiomatic beauty. Garbage programmers need garbage collectors.",
+    "r5": "__**Python**__\nAbsolutely programming in Python, as it is pure magic and idiomatic beauty. Garbage programmers care about garbage collectors.",
     "r6": "__**Keep it G rated**__\nPlease do not post content that you would be embarrassed showing your mother. This includes porn, gore and stuff that you would get banned at work for having.",
     "r7": "__**No spam**__\nThis includes sending the same message over and over, pinging mass amounts of people or crossposting. This may result in a mute and then a ban.",
     "r8": "__**No excessive pinging**__\nPinging staff that you are not actively having a conversation with may result in a mute and kick. You do not have the right to be helped at all times.",
-    "r34": "😳😳😳",
+    "r34": "😳😳😳\n😳😳😳",
     "r69": "haha funny number\nhaha funny number"
 }
 
