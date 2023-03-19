@@ -5,6 +5,7 @@ import datetime
 from discord.ext import commands
 from discord import app_commands
 from discord.ext.commands import Bot, Cog
+from utils.modals import AnnoyMeModal
 
 reply_switch = {"good bot": "I know I am 😌",
                 "bad bot": "Am not smh 😠",
@@ -101,6 +102,11 @@ class JitBotRemainsCog(Cog):
                 jitStatus.color = 0xFF0000
                 jitStatus.add_field(name="JitStreamer: 🔴", value="Request timed out!!\n")
             await interaction.response.send_message(embed=jitStatus)
+
+    @app_commands.command(name="annoyme", description="Send me (Nythepegasus) a message from you!")
+    async def annoyme(self, interaction: discord.Interaction) -> None:
+        await interaction.response.send_modal(AnnoyMeModal())
+
 
 
 async def setup(client: Bot):

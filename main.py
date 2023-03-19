@@ -5,6 +5,7 @@ import aiohttp
 import asyncpg
 import discord
 import traceback
+import pushover as po
 from datetime import datetime
 from packaging import version
 from discord import Embed, Interaction
@@ -23,6 +24,7 @@ class MyClient(commands.Bot):
         self.__TOKEN = conf_data.pop("TOKEN")
         self.conf_data = conf_data
         self.owner_id = self.conf_data["owner_id"]
+        self.pclient = po.Client(self.conf_data["pushover"]["user_key"], self.conf_data["pushover"]["api_key"])
         self.update_channels = None
         self.remove_command("help")
 

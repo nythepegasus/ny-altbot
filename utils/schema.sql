@@ -44,6 +44,11 @@ CREATE TABLE tags (
     section VARCHAR(15)
 );
 
+CREATE TABLE annoys (
+    name VARCHAR(200) NOT NULL,
+    content VARCHAR(4000)
+);
+
 CREATE TYPE skin_type AS ENUM ('edgeToEdge', 'standard', 'both');
 
 CREATE TABLE skins (
