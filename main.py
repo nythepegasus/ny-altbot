@@ -17,6 +17,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands.errors import CheckFailure, CommandNotFound
 from utils.views import RoleDropdown, RoleDropdownView
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class MyClient(commands.Bot):
     def __init__(self, conf_data: dict, *args, **kwargs):
