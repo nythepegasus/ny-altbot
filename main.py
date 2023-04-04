@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import random
@@ -104,7 +105,7 @@ class MyClient(commands.Bot):
         super().run(self.__TOKEN)
 
 
-client = MyClient({**dotenv.dotenv_values()})
+client = MyClient({**os.environ, **dotenv.dotenv_values()})
 
 
 @client.listen()
