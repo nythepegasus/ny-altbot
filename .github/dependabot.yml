@@ -7,3 +7,9 @@ updates:
     open-pull-requests-limit: 10
     update:
       strategy: "widen"
+    labels:
+      - "dependencies"
+    automerged:
+      enabled: true
+      commit-message: "Automatic dependency update"
+      merge-method: "squash"
