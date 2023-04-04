@@ -1,6 +1,7 @@
 import sys
 import json
 import random
+import dotenv
 import aiohttp
 import asyncpg
 import discord
@@ -13,18 +14,19 @@ from discord.app_commands import AppCommandError
 from discord.app_commands.errors import MissingRole, MissingAnyRole
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import CheckFailure, CommandNotFound
+from utils.views import RoleDropdown, RoleDropdownView
 
 
 class MyClient(commands.Bot):
     def __init__(self, conf_data: dict, *args, **kwargs):
-        super().__init__(*args, command_prefix=conf_data["prefix"], intents=discord.Intents().all(),
-                         application_id=conf_data["application_id"], **kwargs)
+        super().__init__(*args, command_prefix=conf_data["DISCORD_PREFIX"], intents=discord.Intents().all(),
+                         application_id=conf_data["DISCORD_APPID"], **kwargs)
         self.session = None
         self.db = None
-        self.__TOKEN = conf_data.pop("TOKEN")
-        self.conf_data = conf_data
-        self.owner_id = self.conf_data["owner_id"]
-        self.pclient = po.Client(self.conf_data["pushover"]["user_key"], self.conf_data["pushover"]["api_key"])
+        self.__TOKEN = conf_data.pop("DISCORD_TOKEN")
+        self.conf = conf_data
+        self.owner_id = self.conf["DISCORD_OID"]
+        self.pclient = po.Client(self.conf["PUSHOVER_UK"], self.conf["PUSHOVER_AK"])
         self.update_channels = None
         self.remove_command("help")
 
@@ -73,14 +75,17 @@ class MyClient(commands.Bot):
     async def setup_hook(self) -> None:
         self.change_status.start()
 
-        self.db = await asyncpg.connect(**self.conf_data["postgres"])
+        self.db = await asyncpg.connect(user=self.conf["POSTGRES_USER"],
+                                        password=self.conf["POSTGRES_PASSWORD"],
+                                        database=self.conf["POSTGRES_DB"],
+                                        host=self.conf["POSTGRES_HOST"])
         print("Connected to postgres!")
 
         update_channels = await self.db.fetch("SELECT * FROM update_channels")
         self.update_channels = [await self.fetch_channel(channel["channel_id"]) for channel in update_channels]
 
         self.update_apps.start()
-        for ext in self.conf_data["modules"]:
+        for ext in ["modules." + e for e in self.conf["DISCORD_MODULES"].split(",")]:
             try:
                 await self.load_extension(ext)
                 print(ext)
@@ -99,7 +104,7 @@ class MyClient(commands.Bot):
         super().run(self.__TOKEN)
 
 
-client = MyClient(json.load(open("conf.json")))
+client = MyClient({**dotenv.dotenv_values()})
 
 
 @client.listen()
