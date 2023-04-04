@@ -2,6 +2,7 @@
 *.pyc
 *.swp
 conf.json
+.env
 modules/tester.py
 **/__pycache__/
 .idea/
