@@ -15,7 +15,6 @@ from discord.app_commands import AppCommandError
 from discord.app_commands.errors import MissingRole, MissingAnyRole
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import CheckFailure, CommandNotFound
-from utils.views import RoleDropdown, RoleDropdownView
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
