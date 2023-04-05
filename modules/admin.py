@@ -1,6 +1,8 @@
 import json
 import asyncio
 import discord
+from datetime import timedelta
+from discord import app_commands
 from typing import Optional, Literal
 from discord.ext import commands
 from discord.ext.commands import Bot, Cog, command, ExtensionNotLoaded, ExtensionAlreadyLoaded, ExtensionNotFound
@@ -12,10 +14,13 @@ class AdminCog(Cog, name="Admin"):
         self.description = "This module is only for the developer"
 
     async def cog_before_invoke(self, ctx):
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except:
+            return
 
     async def cog_check(self, ctx):
-        return await self.client.is_owner(ctx.author)
+        return int(self.client.owner_id) == ctx.author.id
 
     async def cog_command_error(self, ctx, error):
         print(ctx)
@@ -50,7 +55,6 @@ class AdminCog(Cog, name="Admin"):
 
     @command()
     @commands.guild_only()
-    @commands.is_owner()
     async def sync(self, ctx: commands.Context, guilds: commands.Greedy[discord.Object], spec: Optional[Literal["~", "*", "^"]] = None) -> None:
         print(f"{guilds = }")
         if not guilds:
@@ -115,6 +119,28 @@ class AdminCog(Cog, name="Admin"):
         conf["modules"].append(f"modules.{cog}")
         json.dump(conf, open("conf.json", "w"), indent=4)
         return await ctx.send(f"`{cog}` has been added to bot startup!", delete_after=5)
+
+    @app_commands.command(name="yeet", description="Timeout a user")
+    @app_commands.describe(user="The user to recommend this tag to.")
+    @app_commands.describe(duration="The duration to time them out for")
+    @app_commands.describe(reason="Reason for timing them out")
+    async def yeet(self, interaction: discord.Interaction, user: discord.User, duration: str, reason: str = None):
+        units = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
+        try:
+            unit = units[duration[-1]]
+            value = int(duration[:-1])
+            timer = value * unit
+        except (KeyError, ValueError):
+            return await interaction.response.send_message(f"Invalid duration format. Use 's' for seconds, 'm' for minutes, 'h' for hours, 'd' for days, and 'w' for weeks.", ephemeral=True)
+        await user.timeout(timedelta(seconds=timer), reason=reason)
+        return await interaction.response.send(f"Timed out user {user.name} for {timer} seconds.", ephemeral=True)
+
+    @yeet.autocomplete("duration")
+    async def yeet_ac(self, interaction: discord.Interaction, current: str):
+        date_formats = ["1h", "1d", "1w", "30m", "15m"]
+        ret = [date_str for date_str in date_formats if date_str.startswith(string.lower())]
+        if len(ret) == 0:
+            return date_formats
 
 
 async def setup(client: Bot):
