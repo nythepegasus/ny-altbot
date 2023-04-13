@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.10"
 "discord.py" = {git = "https://github.com/Rapptz/discord.py.git"}
 asyncpg = "^0.27.0"
-packaging = "^21.3"
+packaging = "^23.1"
 wavelink = "^2.1.0"
 aiohttp = "^3.8.1"
 
