@@ -84,7 +84,7 @@ class ReactionCog(Cog, name="Reaction Roles"):
     @ac.describe(message="A message to attach to the sent message")
     @ac.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper")
     async def send_menu(self, interaction: Interaction, menu: int, channel: TextChannel, message: str = None):
-        roles = await self.db.fetch("SELECT * FROM role_menu_info WHERE mid = $1 ORDER BY rid ASC", menu)
+        roles = await self.db.fetch("SELECT * FROM role_menu_info WHERE mid = $1", menu)
         r = roles[0]
         choices = [SelectOption(label=role["rname"], description=role["rdesc"], value=role["rid"], emoji=role["remoji"]) for role in roles]
         if r["mmchoice"] > 1:
@@ -117,7 +117,7 @@ class ReactionCog(Cog, name="Reaction Roles"):
         return [ac.Choice(name=menu["name"], value=menu["id"]) for menu in menus]
 
     async def update_menu_messages(self, menu):
-        roles = await self.db.fetch("SELECT * FROM role_menu_info WHERE mid = $1 ORDER BY rid ASC", menu)
+        roles = await self.db.fetch("SELECT * FROM role_menu_info WHERE mid = $1", menu)
         r = roles[0]
         choices = [SelectOption(label=role["rname"], description=role["rdesc"], value=role["rid"], emoji=role["remoji"]) for role in roles]
         if r["mmchoice"] > 1:
