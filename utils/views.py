@@ -23,7 +23,7 @@ class RoleDropdown(discord.ui.Select):
 
         remove = bool([v for v in self.values if v == "0"])
 
-        roles = [guild.get_role(int(role.value)) for role in self.options if role.value != "0"]
+        roles = [guild.get_role(int(role)) for role in self.values if role != "0"]
 
         if remove:
             await interaction.user.remove_roles(*roles)
