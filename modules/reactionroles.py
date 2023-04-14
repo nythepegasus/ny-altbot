@@ -76,7 +76,6 @@ class ReactionCog(Cog, name="Reaction Roles"):
         role = self.client.get_guild(interaction.guild.id).get_role(int(role))
         await self.db.execute("UPDATE roles SET description = $1, emoji = $2 WHERE id = $3", description, emoji, role.id)
         await interaction.response.send_message(f"Updated {role.name}!", ephemeral=True)
-        await self.update_menu_messages(menu)
 
     @ac.command(name="send-role-menu", description="Send a role menu to a channel")
     @ac.describe(menu="The role menu to send")
