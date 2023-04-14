@@ -15,6 +15,7 @@ from discord.app_commands import AppCommandError
 from discord.app_commands.errors import MissingRole, MissingAnyRole
 from discord.ext import commands, tasks
 from discord.ext.commands.errors import CheckFailure, CommandNotFound
+from utils.views import RoleDropdown, RoleDropdownView
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -81,6 +82,19 @@ class MyClient(commands.Bot):
                                         database=self.conf["POSTGRES_DB"],
                                         host=self.conf["POSTGRES_HOST"])
         print("Connected to postgres!")
+
+        menus = await self.db.fetch("SELECT * FROM role_menus")
+        for menu in menus:
+            roles = await self.db.fetch("SELECT * FROM role_menu_info WHERE mid = $1 ORDER BY rid ASC", menu["id"])
+            r = roles[0]
+            choices = [discord.SelectOption(label=role["rname"], description=role["rdesc"], value=role["rid"], emoji=role["remoji"]) for role in roles]
+            if r["mmchoice"] > 1:
+                choices.append(discord.SelectOption(label="Remove Roles",
+                                                    description="This removes all listed roles above, so that you can rechoose which roles you actually want.", 
+                                                    value="0"))
+            view = RoleDropdownView(RoleDropdown(options=choices, placeholder=r["mplaceholder"], min_values=1,
+                                                 max_values=r["mmchoice"], custom_id=str(r["mid"])))
+            self.add_view(view)
 
         update_channels = await self.db.fetch("SELECT * FROM update_channels")
         self.update_channels = [await self.fetch_channel(channel["channel_id"]) for channel in update_channels]

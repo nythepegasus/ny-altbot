@@ -1,190 +1,154 @@
 import discord
-from discord.ext.commands import Cog, Bot, command
-
-# TODO: Generate values and such from DB, for now everything is hardcoded
-
-
-class RoleDropdown(discord.ui.Select):
-    def __init__(self, placeholder: str, options: list[discord.SelectOption], min_values: int, max_values: int, custom_id: str):
-        super().__init__(placeholder=placeholder, min_values=min_values, max_values=max_values, options=options, custom_id=custom_id)
-
-    async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message()
-        guild: discord.Guild = interaction.guild
-
-        roles = [guild.get_role(int(r.value)) for r in self.options]
-        role = guild.get_role(int(self.values[0]))
-
-        await interaction.followup.send(f"You chose: {role.name}.", ephemeral=True)
-
-        await interaction.user.remove_roles(*roles)
-        await interaction.user.add_roles(role)
-
-
-class iPhoneDropdown(RoleDropdown):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="iPhone 5S", description="", value="973604854259908608"),
-            discord.SelectOption(label="iPhone 6/Plus", description="", value="973604873499205632"),
-            discord.SelectOption(label="iPhone 6S/Plus", description="", value="1012616086203674675"),
-            discord.SelectOption(label="iPhone 7/Plus", description="", value="973604885515862096"),
-            discord.SelectOption(label="iPhone X/8/Plus", description="", value="973604889664053268"),
-            discord.SelectOption(label="iPhone SE (2016)", description="", value="973604895909351464"),
-            discord.SelectOption(label="iPhone XR/XS/Max", description="", value="973604901429080074"),
-            discord.SelectOption(label="iPhone 11/Pro", description="", value="973604910841077801"),
-            discord.SelectOption(label="iPhone SE (2020)", description="", value="973604938754170900"),
-            discord.SelectOption(label="iPhone 12/Mini/Pro/Max", description="", value="973604942503895050"),
-            discord.SelectOption(label="iPhone 13/Mini/Pro/Max", description="", value="973604948480770100"),
-            discord.SelectOption(label="iPhone SE (2022)", description="", value="973604945603473418"),
-            discord.SelectOption(label="iPhone 14/Plus", description="", value="1021525000374734850")
-        ]
-
-        super().__init__(placeholder="Choose your iPhone model", min_values=1, max_values=1, options=options, custom_id="dropdown:iphone")
-
-
-class iOSDropdown(RoleDropdown):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="<= iOS 12", description="", value="719312337470750810"),
-            discord.SelectOption(label="iOS 13.0 - 13.3.1", description="", value="973604190066729010"),
-            discord.SelectOption(label="iOS 13.4 - 13.7", description="", value="847304060544745492"),
-            discord.SelectOption(label="iOS 14.0 - 14.3", description="", value="973603795726635029"),
-            discord.SelectOption(label="iOS 14.3 - 14.8.1", description="", value="973603902224207913"),
-            discord.SelectOption(label="iOS 15.0 - 15.1.1", description="", value="956247474081767435"),
-            discord.SelectOption(label="iOS 15.2+", description="", value="973603653652992122"),
-            discord.SelectOption(label="iOS 16+", description="", value="1012525211553374269")
-        ]
-        super().__init__(placeholder="Choose your iOS version", min_values=1, max_values=1, options=options, custom_id="dropdown:ios")
-
-
-class JailbrokenDropdown(RoleDropdown):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="Stock iOS", emoji=u"🪖", description="Nah, I always stay on the latest stock firmware", value="847474574412218409"),
-            discord.SelectOption(label="Jailbroken", emoji=u"🛠", description="Yup, I love myself some good JB tweaks", value="719369094297812993")
-        ]
-        super().__init__(placeholder="Are you jailbroken?", min_values=1, max_values=1, options=options, custom_id="dropdown:jb")
-
-
-class SkillDropdown(RoleDropdown):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="iOS Beginner", emoji=u"🆕", description="I'm more of a beginner at sideloading", value="847507324842147860"),
-            discord.SelectOption(label="Casual User", emoji=u"🦾", description="I'm a power user but don't get into dev stuff", value="847517763966205974"),
-            discord.SelectOption(label="iOS Veteran", emoji=u"👨‍💻", description="I do at least some dev / tinkering with iOS", value="847507222934061087")
-        ]
-        super().__init__(placeholder="Choose your skill", min_values=1, max_values=1, options=options, custom_id="dropdown:skill")
-
-
-class ComputerDropdown(RoleDropdown):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="<= macOS 10.15", emoji=u"🦴", description="", value="847303756176424971"),
-            discord.SelectOption(label="macOS 11", emoji=u"🍏", description="", value="973603015498010624"),
-            discord.SelectOption(label="macOS 12", emoji=u"🍎", description="", value="956248314800656485"),
-            discord.SelectOption(label="macOS 13", emoji=u"🍎", description="", value="1012525153864929320"),
-            discord.SelectOption(label="<= Windows 8", emoji=u"\u231B", description="", value="847472981130084382"),
-            discord.SelectOption(label="Windows 10", emoji=u"🪟", description="", value="973603196964589658"),
-            discord.SelectOption(label="Windows 11", emoji=u"🖼", description="", value="956247720631357601"),
-            discord.SelectOption(label="Linux", emoji=u"🐧", description="Not officially supported, we'll try our best!", value="1012616749193121803")
-        ]
-        super().__init__(placeholder="Choose your MAIN computer's OS", min_values=1, max_values=1, options=options, custom_id="dropdown:computer")
-
-
-class DevicesDropdown(RoleDropdown):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="iPad", emoji=u"📝", description="", value="847726262583951380"),
-            discord.SelectOption(label="TV", emoji=u"📺", description="", value="847604362313990164"),
-            discord.SelectOption(label="Mac", emoji=u"💻", description="", value="1012525470908153901"),
-            discord.SelectOption(label="Remove Roles", description="This removes all listed roles above, so that you can rechoose which roles you actually want.", value="0")
-        ]
-        super().__init__(placeholder="Choose devices you want to see support for", min_values=1, max_values=4, options=options, custom_id="dropdown:devices")
-
-    async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message()
-
-        remove = bool([v for v in self.values if v == "0"])
-
-        guild: discord.Guild = interaction.guild
-        roles = [guild.get_role(int(role)) for role in self.values]
-
-        if remove:
-            roles = [guild.get_role(int(role.value)) for role in self.options if role.value != "0"]
-            await interaction.user.remove_roles(*roles)
-            return await interaction.followup.send("Removed all roles!", ephemeral=True)
-        else:
-            await interaction.user.add_roles(*roles)
-            return await interaction.followup.send("You chose:\n" + '\n'.join([role.name for role in roles]), ephemeral=True)
-
-
-class PingDropdown(RoleDropdown):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="AltStore Notifications", emoji=discord.PartialEmoji.from_str("<:AltStore:849473203599704064>"), description="Get notifications whenever AltStore updates!", value="944733407966015531"),
-            discord.SelectOption(label="Delta Notifications", emoji=discord.PartialEmoji.from_str("<:Delta:849473203742048266>"), description="Get notifications whenever Delta updates!", value="944733560156348436"),
-            discord.SelectOption(label="Potential Collaborator", emoji="👨‍🔧", description="Yeah, I could maybe contribute sometime", value="847506847752519720"),
-            discord.SelectOption(label="Tester", description="Get pinged whenever something relating to AltStore/Delta needs testing", value="847161591653072927"),
-            discord.SelectOption(label="Skin Tester", description="Get pinged whenever new Delta skins need testing", value="1012525070507331615"),
-            discord.SelectOption(label="Remove Ping Roles", description="This removes all ping roles, so that you can rechoose which roles you actually want.", value="0")
-        ]
-        super().__init__(placeholder="Choose based on when you want to be pinged", min_values=1, max_values=6, options=options, custom_id="dropdown:ping")
-
-    async def callback(self, interaction: discord.Interaction):
-        await interaction.response.edit_message()
-
-        remove = bool([v for v in self.values if v == "0"])
-
-        guild: discord.Guild = interaction.guild
-        roles = [guild.get_role(int(role)) for role in self.values]
-
-        if remove:
-            roles = [guild.get_role(int(role.value)) for role in self.options if role.value != "0"]
-            await interaction.followup.send("Removed all ping roles!", ephemeral=True)
-            await interaction.user.remove_roles(*roles)
-        else:
-            await interaction.followup.send("You chose:\n" + '\n'.join([role.name for role in roles]), ephemeral=True)
-            await interaction.user.add_roles(*roles)
-
-
-class RoleDropdownView(discord.ui.View):
-    def __init__(self, select: discord.ui.Select):
-        super().__init__(timeout=None)
-
-        self.add_item(select())
+from discord import Interaction, SelectOption, TextChannel, Role
+from discord import app_commands as ac
+from discord.ext.commands import Cog, Bot
+from utils.views import RoleDropdown, RoleDropdownView
 
 
 class ReactionCog(Cog, name="Reaction Roles"):
     def __init__(self, client: Bot):
         self.client = client
+        self.db = client.db
         self.description = "This module adds support for reaction roles."
-        self.client.add_view(RoleDropdownView(iOSDropdown))
-        self.client.add_view(RoleDropdownView(iPhoneDropdown))
-        self.client.add_view(RoleDropdownView(JailbrokenDropdown))
-        self.client.add_view(RoleDropdownView(SkillDropdown))
-        self.client.add_view(RoleDropdownView(ComputerDropdown))
-        self.client.add_view(RoleDropdownView(DevicesDropdown))
-        self.client.add_view(RoleDropdownView(PingDropdown))
 
-    async def cog_before_invoke(self, ctx):
-        await ctx.message.delete()
+    @ac.command(name="add-role-menu", description="Add a custom menu to the bot")
+    @ac.describe(name="The custom name to use for the menu")
+    @ac.describe(max_choice="The maximum amount of roles users can select")
+    @ac.describe(placeholder="The placeholder inside the menu")
+    @ac.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper")
+    async def add_role_menu(self, interaction: Interaction, name: str, max_choice: int = 1, placeholder: str = None):
+        query = "INSERT INTO role_menus (name, placeholder, guild, max_choice) VALUES ($1, $2, $3, $4)"
+        await self.db.execute(query, name, placeholder, interaction.guild.id, max_choice)
+        await interaction.response.send_message(f"Registered {name} into list of menus!", ephemeral=True)
 
-    async def cog_check(self, ctx):
-        return await self.client.is_owner(ctx.author)
+    @ac.command(name="del-role-menu", description="Delete a custom menu from the bot")
+    @ac.describe(menu="The menu to delete")
+    @ac.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper")
+    async def del_role_menu(self, interaction: Interaction, menu: int):
+        menu_name = await self.db.fetchval("SELECT name FROM role_menus WHERE id = $1", menu)
+        await self.db.execute("DELETE FROM role_menus WHERE id = $1", menu)
+        await interaction.response.send_message(f"Deleted {menu_name} from list of menus!", ephemeral=True)
 
-    async def cog_command_error(self, ctx, error):
-        print(ctx)
-        print(error)
+    @ac.command(name="edit-role-menu", description="Edit a custom menu from the bot")
+    @ac.describe(menu="The menu to edit")
+    @ac.describe(max_choice="The maximum amount of roles users can select")
+    @ac.describe(placeholder="The placeholder inside the menu")
+    @ac.describe(name="What you would like to rename the menu to")
+    @ac.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper")
+    async def edit_role_menu(self, interaction: Interaction, menu: int, max_choice: int = 1, placeholder: str = None, name: str = None):
+        menu_name = await self.db.fetchval("SELECT name FROM role_menus WHERE id = $1", menu)
+        query = "UPDATE role_menus "
+        query += "SET name = $1, " if name is not None else "SET "
+        query += " placeholder = $2, guild = $3, max_choice = $4 "
+        query += "WHERE id = $5"
+        await self.db.execute(query, name, placeholder, interaction.guild.id, max_choice, menu)
+        await self.update_menu_messages(menu)
+        await interaction.response.send_message(f"Updated {menu_name}!", ephemeral=True)
 
-    @command(name="prep-roles")
-    async def prepare_reroles(self, ctx):
-        await ctx.channel.send("Pick your iPhone model:", view=RoleDropdownView(iPhoneDropdown))
-        await ctx.channel.send("Pick your iOS version:", view=RoleDropdownView(iOSDropdown))
-        await ctx.channel.send("Are you jailbroken:", view=RoleDropdownView(JailbrokenDropdown))
-        await ctx.channel.send("What would you consider your computer skill level:", view=RoleDropdownView(SkillDropdown))
-        await ctx.channel.send("Which computer OS do you use on your **MAIN** computer for AltServer:", view=RoleDropdownView(ComputerDropdown))
-        await ctx.channel.send("Which devices would you like to see AltStore/Delta on next:", view=RoleDropdownView(DevicesDropdown))
-        await ctx.channel.send("Choose the following that apply: ", view=RoleDropdownView(PingDropdown))
+    @ac.command(name="add-role-to-menu", description="Add a role to a role menu registered to the bot")
+    @ac.describe(role="The role to add to the menu")
+    @ac.describe(menu="The menu to add the role to")
+    @ac.describe(emoji="The emoji to represent this role")
+    @ac.describe(description="The description of the role inside of the menu")
+    @ac.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper")
+    async def add_role_to_menu(self, interaction: Interaction, role: Role, menu: int, description: str = None, emoji: str = None):
+        query = "INSERT INTO roles (id, name, guild, menu, description, emoji) VALUES ($1, $2, $3, $4, $5, $6)" \
+                "ON CONFLICT (id) DO UPDATE SET menu = $4"
+        await self.db.execute(query, role.id, role.name, role.guild.id, menu, description, emoji)
+        menu_name = await self.db.fetchval("SELECT name FROM role_menus WHERE id = $1", menu)
+        await interaction.response.send_message(f"Registered {role.name} into {menu_name}!", ephemeral=True)
+        await self.update_menu_messages(menu)
+
+    @ac.command(name="del-role-from-menu", description="Delete a role from a menu registered to the bot")
+    @ac.describe(role="The role to remove from the menu")
+    @ac.describe(menu="The menu to remove the role from")
+    @ac.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper")
+    async def del_role_fr_menu(self, interaction: Interaction, role: str, menu: int):
+        role = self.client.get_guild(interaction.guild.id).get_role(int(role))
+        await self.db.execute("UPDATE roles SET menu = NULL WHERE id = $1", role.id)
+        menu_name = await self.db.fetchval("SELECT name FROM role_menus WHERE id = $1", menu)
+        await interaction.response.send_message(f"Deleted {role.name} from {menu_name}!", ephemeral=True)
+        await self.update_menu_messages(menu)
+
+    @ac.command(name="edit-role-for-menu", description="Edit a role that is already registered to a menu.")
+    @ac.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper")
+    async def edit_role_for_menu(self, interaction: Interaction, role: str, description: str = None, emoji: str = None):
+        role = self.client.get_guild(interaction.guild.id).get_role(int(role))
+        await self.db.execute("UPDATE roles SET description = $1, emoji = $2 WHERE id = $3", description, emoji, role.id)
+        await interaction.response.send_message(f"Updated {role.name}!", ephemeral=True)
+        await self.update_menu_messages(menu)
+
+    @ac.command(name="send-role-menu", description="Send a role menu to a channel")
+    @ac.describe(menu="The role menu to send")
+    @ac.describe(channel="The channel to send the menu to")
+    @ac.describe(message="A message to attach to the sent message")
+    @ac.checks.has_any_role("Mods", "Moderator", "Helpers", "Helper")
+    async def send_menu(self, interaction: Interaction, menu: int, channel: TextChannel, message: str = None):
+        roles = await self.db.fetch("SELECT * FROM role_menu_info WHERE mid = $1 ORDER BY rid ASC", menu)
+        r = roles[0]
+        choices = [SelectOption(label=role["rname"], description=role["rdesc"], value=role["rid"], emoji=role["remoji"]) for role in roles]
+        if r["mmchoice"] > 1:
+            choices.append(SelectOption(label="Remove Roles",
+                                                description="This removes all listed roles above, so that you can rechoose which roles you actually want.", 
+                                                value="0"))
+        view = RoleDropdownView(RoleDropdown(options=choices, placeholder=r["mplaceholder"], min_values=1,
+                                             max_values=r["mmchoice"], custom_id=str(r["mid"])))
+
+        msg = await channel.send(view=view)
+        await self.db.execute("INSERT INTO menu_messages (id, channel, menu) VALUES ($1, $2, $3)", msg.id, channel.id, r["mid"])
+
+        await interaction.response.send_message(f"Sent {r['mname']} to {channel.name}!", ephemeral=True)
+
+    @del_role_fr_menu.autocomplete("role")
+    @edit_role_for_menu.autocomplete("role")
+    async def role_ac(self, interaction: Interaction, current: str) -> list[ac.Choice[int]]:
+        query = "SELECT * FROM roles WHERE name ILIKE $1 AND guild = $2 LIMIT 25"
+        roles = await self.db.fetch(query, f"{current}%", interaction.guild.id)
+        return [ac.Choice(name=role["name"], value=str(role["id"])) for role in roles]
+
+    @add_role_to_menu.autocomplete("menu")
+    @edit_role_menu.autocomplete("menu")
+    @del_role_menu.autocomplete("menu")
+    @del_role_fr_menu.autocomplete("menu")
+    @send_menu.autocomplete("menu")
+    async def menu_ac(self, interaction: Interaction, current: str) -> list[ac.Choice[int]]:
+        query = "SELECT * FROM role_menus WHERE name ILIKE $1 AND guild = $2 LIMIT 25"
+        menus = await self.db.fetch(query, f"{current}%", interaction.guild.id)
+        return [ac.Choice(name=menu["name"], value=menu["id"]) for menu in menus]
+
+    async def update_menu_messages(self, menu):
+        roles = await self.db.fetch("SELECT * FROM role_menu_info WHERE mid = $1 ORDER BY rid ASC", menu)
+        r = roles[0]
+        choices = [SelectOption(label=role["rname"], description=role["rdesc"], value=role["rid"], emoji=role["remoji"]) for role in roles]
+        if r["mmchoice"] > 1:
+            choices.append(SelectOption(label="Remove Roles",
+                                                description="This removes all listed roles above, so that you can rechoose which roles you actually want.", 
+                                                value="0"))
+        view = RoleDropdownView(RoleDropdown(options=choices, placeholder=r["mplaceholder"], min_values=1,
+                                             max_values=r["mmchoice"], custom_id=str(r["mid"])))
+        self.client.add_view(view)
+
+        msgs = await self.db.fetch("SELECT * FROM menu_messages WHERE menu = $1", menu)
+        for msg in msgs:
+            channel = self.client.get_guild(r["mguild"]).get_channel(int(msg["channel"]))
+            try:
+                m = await channel.fetch_message(msg["id"])
+                await m.edit(view=view)
+            except:
+                print("RIP message!")
+
+    @Cog.listener()
+    async def on_raw_message_delete(self, message):
+        if message.guild_id:
+            await self.db.execute("DELETE FROM menu_messages WHERE id = $1", message.message_id)
+
+    @Cog.listener()
+    async def on_guild_role_delete(self, role):
+        await self.db.execute("DELETE FROM roles WHERE id = $1", role.id)
+
+    @Cog.listener()
+    async def on_guild_role_update(self, before, after):
+        await self.db.execute("UPDATE roles SET id = $1, name = $2 WHERE id = $3", after.id, after.name, before.id)
 
 
 async def setup(client: Bot):

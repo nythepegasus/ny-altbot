@@ -59,11 +59,44 @@ CREATE TABLE skins (
     url VARCHAR(200) NOT NULL
 );
 
-CREATE TABLE react_roles (
-    guild_id BIGINT NOT NULL,
-    channel_id BIGINT NOT NULL,
-    message_id BIGINT NOT NULL,
-    role_id BIGINT NOT NULL,
-    emoji VARCHAR(5) NOT NULL,
-    exclusive VARCHAR(100)
+CREATE TABLE role_menus (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) NOT NULL,
+	placeholder VARCHAR(100),
+	guild BIGINT NOT NULL,
+	max_choice INT NOT NULL DEFAULT 1 CHECK (max_choice >= 1 AND max_choice <= 25),
+	UNIQUE (guild, name)
 );
+
+CREATE TABLE menu_messages (
+	id BIGINT PRIMARY KEY,
+	channel BIGINT NOT NULL,
+	menu INT REFERENCES role_menus(id) ON DELETE CASCADE,
+	UNIQUE (id, channel),
+	UNIQUE (id, menu)
+);
+
+CREATE TABLE roles (
+    id BIGINT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    guild BIGINT NOT NULL,
+    menu INTEGER NULL REFERENCES role_menus(id) ON DELETE SET NULL,
+    description VARCHAR(100),
+    emoji VARCHAR(5),
+    UNIQUE (guild, id),
+    UNIQUE (menu, id),
+    UNIQUE (menu, name)
+);
+
+CREATE VIEW role_menu_info AS
+ SELECT rm.id AS mid,
+    rm.name AS mname,
+    rm.placeholder AS mplaceholder,
+    rm.guild AS mguild,
+    rm.max_choice AS mmchoice,
+    r.id AS rid,
+    r.name AS rname,
+    r.description AS rdesc,
+    r.emoji AS remoji
+   FROM (public.role_menus rm
+     JOIN public.roles r ON ((r.menu = rm.id)));
