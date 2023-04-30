@@ -147,24 +147,23 @@ class MyClient(commands.Bot):
 
     async def reset_anisette(self):
         try:
-            create_tmux = await self.ssh_conn.run("tmux new-session -d -s anisette '/home/ny/prod/omnisette/omnisette-server-linux --http-port 6969'")
-            result_one = await self.ssh_conn.run("tmux send-keys -t 'anisette:0' C-c './omnisette-server-linux --http-port 6969' Enter")
-            result_two = await self.ssh_conn.run("tmux send-keys -t 'anisette:0' './omnisette-server-linux --http-port 6969' Enter")
+            create_tmux = await self.ssh_conn.run("tmux new-session -d -s anisette")
+            result_one = await self.ssh_conn.run("tmux send-keys -t 'anisette:0' C-c 'cd /home/ny/prod/omnisette && ./omnisette-server-linux --http-port 6969' Enter")
+            result_two = await self.ssh_conn.run("tmux send-keys -t 'anisette:0' 'cd /home/ny/prod/omnisette && ./omnisette-server-linux --http-port 6969' Enter")
 
-            if create_tmux.exit_status == 0:
-                print("Yay created tmux :)")
-            else:
+            print(create_tmux.stdout, end='')
+            print(result_one.stdout, end='')
+            print(result_two.stdout, end='')
+
+            if create_tmux.exit_status != 0:
                 print("It's probably already there..")
 
-            if result_one.exit_status == 0:
-                print(result_one.stdout, end='')
-            else:
+            if result_one.exit_status != 0:
                 print("Anisette tmux command 1 with ctrl-C failed, oh well.")
 
-            if result_two.exit_status == 0:
-                print(result_two.stdout, end='')
-            else:
+            if result_two.exit_status != 0:
                 print("Uh oh, this is bad news bears!")
+
         except Exception as ex:
             print(ex)
 
