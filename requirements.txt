@@ -15,6 +15,6 @@ pyparsing==3.0.9
 python-dotenv==1.0.0
 requests==2.28.2
 ujson==5.7.0
-urllib3==1.26.15
+urllib3==2.0.4
 wavelink==2.1.0
 yarl==1.9.2
